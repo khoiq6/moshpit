@@ -1,12 +1,17 @@
 name: Build Moshpit IPA
 on:
   workflow_dispatch:
-  push:
-    branches: [vi-windows-rdp, vi-vps-pro]
+    inputs:
+      verified:
+        description: 'All feature and device acceptance checks passed'
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: read
 jobs:
   ipa:
+    if: ${{ inputs.verified == true }}
     runs-on: xcode-27
     timeout-minutes: 150
     steps:
