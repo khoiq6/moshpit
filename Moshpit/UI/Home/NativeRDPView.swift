@@ -32,16 +32,82 @@ enum NativeRDPTrust {
         guard expectedHost.caseInsensitiveCompare(actualHost) == .orderedSame else { return false }
         if let approved {
             guard let fingerprint else { return false }
-            return fingerprint.caseInsensitiveCompare(approved) == .orderedSame
+            return matchesFingerprint(fingerprint, expected: approved)
         }
         return trusted
+    }
+
+    static func matchesFingerprint(_ input: String, expected: String) -> Bool {
+        guard let digest = canonicalFingerprint(input) else { return false }
+        return digest == canonicalFingerprint(expected)
+    }
+
+    private static func canonicalFingerprint(_ value: String) -> String? {
+        let digest = value.filter { !$0.isWhitespace && $0 != ":" && $0 != "-" }
+        guard digest.count == 64, digest.allSatisfy({ $0.isASCII && $0.isHexDigit }) else { return nil }
+        return digest.lowercased()
+    }
+}
+
+enum NativeRDPFailure {
+    static func message(for failure: RDPConnectionFailure?, showedDesktop: Bool) -> String.LocalizationValue {
+        switch failure {
+        case .addressResolution?:
+            "RDP address could not be resolved"
+        case .connect(error: let socket)?:
+            switch socket.category {
+            case .refused: "RDP port refused the connection"
+            case .timedOut: "RDP server did not respond in time"
+            default: "RDP server could not be reached"
+            }
+        case .noConnectionConfirm(reason: .unexpectedReply)?:
+            "RDP port answered with another protocol"
+        case .noConnectionConfirm(reason: .timedOut)?, .timedOut?:
+            "RDP server did not respond in time"
+        case .negotiation?, .unsupportedSecurityProtocol?, .legacyCredSSPVersion?, .tls?, .tlsKeyUsageIncorrect?:
+            "RDP secure connection failed"
+        case .credSSP(status: .logonTypeNotGranted)?, .earlyUserAuthorizationDenied?:
+            "RDP account is not allowed"
+        case .credSSP?, .credSSPClosedAfterCredentials?, .credentialsRequired?, .rdSTLS?:
+            "RDP sign-in failed"
+        case .noFramePresented?, .graphicsFrameHandler?:
+            "RDP desktop did not appear"
+        case .licensing?:
+            "RDP licensing failed"
+        case .invalidConfiguration?:
+            "Invalid RDP address or credentials"
+        case .noConnectionConfirm?, .connectionLost?, .connectionClosed?:
+            showedDesktop ? "RDP connection was interrupted" : "RDP connection closed before the desktop appeared"
+        case .serverTermination(termination: let termination)?:
+            switch termination.category {
+            case .accessDenied: "RDP account is not allowed"
+            case .licensing: "RDP licensing failed"
+            default: "RDP could not continue"
+            }
+        case .protocolViolation?, .clientFailure?:
+            "RDP could not continue"
+        case .cancelled?, nil:
+            showedDesktop ? "RDP session ended" : "RDP connection closed before the desktop appeared"
+        }
     }
 }
 
 @MainActor
 final class NativeRDPController: ObservableObject {
-    @Published private(set) var connecting = false
-    @Published private(set) var connected = false
+    enum Phase {
+        case idle, connecting, waitingForDesktop, verifyingCertificate, reconnecting, connected, ended
+    }
+
+    @Published private(set) var phase: Phase = .idle
+    var connected: Bool { phase == .connected }
+    var progressMessage: String? {
+        switch phase {
+        case .connecting: WindowsWords.text("Connecting RDP")
+        case .waitingForDesktop: WindowsWords.text("Waiting for the RDP desktop")
+        case .reconnecting: WindowsWords.text("Reconnecting RDP")
+        default: nil
+        }
+    }
     @Published private(set) var error = ""
     @Published private(set) var pendingFingerprint: String?
     @Published private(set) var fps = 0.0
@@ -58,10 +124,10 @@ final class NativeRDPController: ObservableObject {
     private var configuration: RDPConnectionConfiguration?
     private var approvedFingerprint: String?
     private var retryTask: Task<Void, Never>?
+    private var presentationTask: Task<Void, Never>?
     private var textTask: Task<Void, Never>?
     private var generation = UUID()
     private var retries = 0
-    private var renderedOnce = false
     private var input: RDPInputSession?
     private var display: RDPDisplayControlSession?
     private var clipboard: RDPClipboardSession?
@@ -82,10 +148,9 @@ final class NativeRDPController: ObservableObject {
     fileprivate weak var canvas: NativeRDPCanvas?
     fileprivate var desktopSize = CGSize.zero
 
-    func connect(host: String, port: UInt16, user: String, password: String, quality: NativeRDPQuality) {
+    func connect(host: String, port: String, user: String, password: String, quality: NativeRDPQuality) {
         disconnect()
-        let host = host.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !host.isEmpty, port > 0,
+        guard let target = try? RDPConnectionTarget(host: host, portText: port),
               let credentials = try? RDPCredentials.validated(username: user, password: password) else {
             error = WindowsWords.text("Invalid RDP address or credentials")
             return
@@ -93,22 +158,22 @@ final class NativeRDPController: ObservableObject {
         preferredQuality = quality
         profile = quality
         var config = RDPConnectionConfiguration(
-            host: host, port: port, credentials: credentials,
+            host: target.host, port: target.port, credentials: credentials,
             timeoutSeconds: 20, graphicsFrameCaptureLimit: nil,
             desktopWidth: quality.width, desktopHeight: quality.height,
             clipboardEnabled: true, clipboardFetchesRemoteCopies: false,
             audioPlaybackEnabled: false, clientName: "Moshpit"
         )
-        config.connectAttempts = 1
-        configuration = config
+        // A retry can get past the iOS Local Network prompt. This only retries TCP, before sign-in.
+        config.connectAttempts = 2
         start(config)
     }
 
     private func start(_ config: RDPConnectionConfiguration) {
         let id = UUID()
         generation = id
-        connecting = true
-        connected = false
+        configuration = config
+        phase = .connecting
         error = ""
         pendingFingerprint = nil
         input = nil
@@ -117,8 +182,8 @@ final class NativeRDPController: ObservableObject {
         remoteText = nil
         remoteCopyNumber = nil
         remoteClipboardAvailable = false
-        renderedOnce = false
         desktopSize = .zero
+        resolution = ""
         canvas?.clear()
         metrics.reset(connectionStartedAt: Date())
         slowWindows = 0; goodWindows = 0; frameCount = 0; presentedCount = 0
@@ -152,6 +217,7 @@ final class NativeRDPController: ObservableObject {
                         guard controller.generation == id else { return }
                         controller.releaseInput()
                         controller.input = input
+                        if controller.phase == .connecting { controller.phase = .waitingForDesktop }
                     }
                 },
                 onDisplayControlReady: { display in
@@ -183,12 +249,17 @@ final class NativeRDPController: ObservableObject {
                         run.cancellation.cancel()
                         recipient.deliver { controller in
                             guard controller.generation == id else { return }
-                            controller.connecting = false
-                            controller.connected = false
+                            controller.session = nil
                             controller.error = WindowsWords.text("Untrusted RDP certificate")
                             // Do not offer trust on an unexpected redirection or a changed pin.
-                            if approved == nil, cert.host.caseInsensitiveCompare(config.host) == .orderedSame {
-                                controller.pendingFingerprint = cert.sha256
+                            if approved == nil, cert.host.caseInsensitiveCompare(config.host) == .orderedSame,
+                               let fingerprint = cert.sha256 {
+                                controller.phase = .verifyingCertificate
+                                controller.pendingFingerprint = fingerprint
+                            } else {
+                                controller.phase = .ended
+                                controller.configuration = nil
+                                controller.approvedFingerprint = nil
                             }
                         }
                         return
@@ -200,57 +271,73 @@ final class NativeRDPController: ObservableObject {
         }
     }
 
-    func acceptFingerprint(_ fingerprint: String) {
-        guard fingerprint == pendingFingerprint, let config = configuration else { return }
-        session?.cancel()
+    func acceptFingerprint(_ verifiedFingerprint: String) {
+        guard let fingerprint = pendingFingerprint, let config = configuration else { return }
+        guard NativeRDPTrust.matchesFingerprint(verifiedFingerprint, expected: fingerprint) else {
+            error = WindowsWords.text("RDP fingerprint mismatch")
+            return
+        }
         approvedFingerprint = fingerprint
         start(config)
     }
 
     private func ended(_ report: RDPConnectionReport, id: UUID) {
         guard generation == id else { return }
+        let wasRendered = connected
+        session = nil
+        presentationTask?.cancel(); presentationTask = nil
         releaseInput()
         input = nil; display = nil; clipboard = nil
         remoteText = nil; remoteCopyNumber = nil; remoteClipboardAvailable = false
         canvas?.clear()
-        let wasRendered = renderedOnce
-        connected = false; connecting = false
         let networkFailure: Bool
         switch report.failure {
         case .connectionLost?, .connectionClosed?, .timedOut?, .connect?: networkFailure = true
         default: networkFailure = false
         }
-        if autoReconnect, networkFailure, report.remoteTermination == nil,
-           (wasRendered || retries > 0), retries < 2, var config = configuration {
-            retries += 1
-            if report.targetHost.caseInsensitiveCompare(config.host) == .orderedSame,
-               report.targetPort == config.port {
+        if autoReconnect, report.remoteTermination == nil, retries < 2, var config = configuration,
+           report.targetHost.caseInsensitiveCompare(config.host) == .orderedSame,
+           report.targetPort == config.port {
+            if case .noFramePresented? = report.failure, config.graphicsCapabilityProfile == .automatic {
+                // Retry the first frame once with the library's non-AVC graphics profile.
+                config.graphicsCapabilityProfile = .legacy
+            } else if networkFailure, wasRendered || retries > 0 {
                 config.autoReconnectCookie = report.rdpAutoReconnectCookie ?? config.autoReconnectCookie
+            } else {
+                finish(report, wasRendered: wasRendered)
+                return
             }
-            configuration = config
-            connecting = true
+            retries += 1
+            phase = .reconnecting
             retryTask = Task { @MainActor [weak self] in
                 do { try await Task.sleep(for: .seconds(2)) } catch { return }
                 guard let self, self.generation == id else { return }
+                self.retryTask = nil
                 self.start(config)
             }
         } else {
-            error = WindowsWords.text("RDP session ended")
-            configuration = nil
-            approvedFingerprint = nil
+            finish(report, wasRendered: wasRendered)
         }
+    }
+
+    private func finish(_ report: RDPConnectionReport, wasRendered: Bool) {
+        phase = .ended
+        error = WindowsWords.text(NativeRDPFailure.message(for: report.failure, showedDesktop: wasRendered))
+        configuration = nil
+        approvedFingerprint = nil
     }
 
     func disconnect() {
         generation = UUID()
         retryTask?.cancel(); retryTask = nil
+        presentationTask?.cancel(); presentationTask = nil
         releaseInput()
         session?.cancel(); session = nil
         configuration = nil; approvedFingerprint = nil; pendingFingerprint = nil
         input = nil; display = nil; clipboard = nil
         remoteText = nil; remoteCopyNumber = nil; remoteClipboardAvailable = false
-        connecting = false; connected = false; error = ""
-        renderedOnce = false; desktopSize = .zero; retries = 0
+        phase = .idle; error = ""
+        desktopSize = .zero; retries = 0
         fps = 0; mbps = 0; decodeMS = 0; frameAgeMS = 0; resolution = ""
         canvas?.clear()
     }
@@ -265,16 +352,26 @@ final class NativeRDPController: ObservableObject {
             remotePoint = bounded(CGPoint(x: CGFloat(remotePoint.x), y: CGFloat(remotePoint.y)))
             canvas?.setNeedsLayout()
         }
-        if !renderedOnce {
-            renderedOnce = true
-            connected = true
-            connecting = false
-        }
         frameCount += 1
         canvas?.offer(presentation, receivedAt: date)
+        // RDPKit stops waiting once it decodes a frame. Also bound the wait for our own display layer.
+        if !connected, presentationTask == nil {
+            let id = generation
+            presentationTask = Task { @MainActor [weak self] in
+                do { try await Task.sleep(for: .seconds(8)) } catch { return }
+                guard let self, self.generation == id, !self.connected else { return }
+                self.disconnect()
+                self.error = WindowsWords.text("RDP desktop did not appear")
+                self.phase = .ended
+            }
+        }
     }
 
     fileprivate func frameEnqueued(at received: Date) {
+        if !connected {
+            presentationTask?.cancel(); presentationTask = nil
+            phase = .connected
+        }
         presentedCount += 1
         latestAge = max(0, Date().timeIntervalSince(received) * 1000)
     }
@@ -691,12 +788,13 @@ struct NativeRDPView: View {
     @AppStorage("nativeRDP.port") private var port = "3389"
     @State private var password = ""
     @State private var quality: NativeRDPQuality = .balanced
-    @State private var showingSession = false
     @State private var showTextInput = false
     @State private var typedText = ""
     @State private var verifyFingerprint = ""
     @State private var confirmTrust = false
     @State private var leftHeld = false
+
+    private var showingSession: Bool { controller.phase != .idle }
 
     var body: some View {
         NavigationStack {
@@ -706,56 +804,66 @@ struct NativeRDPView: View {
                         NativeRDPSurface(controller: controller)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .overlay {
-                                if controller.connecting {
-                                    ProgressView(WindowsWords.text("Connecting RDP")).padding(16)
+                                if let progress = controller.progressMessage {
+                                    ProgressView(progress).padding(16)
                                         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                                } else if !controller.connected, !controller.error.isEmpty {
+                                    VStack(spacing: 12) {
+                                        Text(controller.error)
+                                        if let fingerprint = controller.pendingFingerprint {
+                                            Text(fingerprint).font(.caption.monospaced()).textSelection(.enabled)
+                                            Button(WindowsWords.text("Verify server fingerprint")) {
+                                                verifyFingerprint = ""; confirmTrust = true
+                                            }
+                                        }
+                                    }
+                                    .multilineTextAlignment(.center)
+                                    .padding(16)
+                                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                                    .padding(.horizontal)
                                 }
                             }
-                        HStack {
-                            Text(String(format: "%.0f FPS · %.1f Mbps", controller.fps, controller.mbps))
-                            Spacer()
-                            Text(controller.resolution)
-                        }
-                        .font(.caption.monospacedDigit()).padding(6)
-                        Text(String(format: "Decode %.1f ms · Frame %.1f ms", controller.decodeMS, controller.frameAgeMS))
-                            .font(.caption2.monospacedDigit())
-                        if !controller.error.isEmpty {
-                            Text(controller.error).font(.caption).foregroundStyle(.secondary).padding(4)
-                        }
-                        if let fingerprint = controller.pendingFingerprint {
-                            Text(fingerprint).font(.caption2.monospaced()).textSelection(.enabled)
-                            Button(WindowsWords.text("Verify server fingerprint")) {
-                                verifyFingerprint = ""; confirmTrust = true
+                        if controller.connected {
+                            HStack {
+                                Text(String(format: "%.0f FPS · %.1f Mbps", controller.fps, controller.mbps))
+                                Spacer()
+                                Text(controller.resolution)
                             }
+                            .font(.caption.monospacedDigit()).padding(6)
+                            Text(String(format: "Decode %.1f ms · Frame %.1f ms", controller.decodeMS, controller.frameAgeMS))
+                                .font(.caption2.monospacedDigit())
+                            if !controller.error.isEmpty {
+                                Text(controller.error).font(.caption).foregroundStyle(.secondary).padding(4)
+                            }
+                            HStack {
+                                Picker(WindowsWords.text("Mouse mode"), selection: $controller.mouseMode) {
+                                    ForEach(NativeRDPMouseMode.allCases) { Text($0.title).tag($0) }
+                                }.pickerStyle(.segmented)
+                                Button { controller.click(.right) } label: { Image(systemName: "cursorarrow.click.2") }
+                                    .accessibilityLabel(WindowsWords.text("Right click"))
+                                Button {
+                                    leftHeld.toggle()
+                                    controller.button(.left, down: leftHeld)
+                                } label: { Image(systemName: leftHeld ? "lock.fill" : "hand.draw") }
+                                    .accessibilityLabel(WindowsWords.text("Hold left mouse button"))
+                                Button { showTextInput = true } label: { Image(systemName: "keyboard") }
+                                    .accessibilityLabel(WindowsWords.text("Send text"))
+                                Menu {
+                                    Button("Enter") { controller.tapKey(0x1c) }
+                                    Button("Esc") { controller.tapKey(0x01) }
+                                    Button("Tab") { controller.tapKey(0x0f) }
+                                    Button("Backspace") { controller.tapKey(0x0e) }
+                                    Button("↑") { controller.tapKey(0x48, extended: true) }
+                                    Button("↓") { controller.tapKey(0x50, extended: true) }
+                                    Button(WindowsWords.text("Send phone clipboard")) { controller.sendClipboard() }
+                                    Button(WindowsWords.text("Request remote clipboard")) { controller.requestClipboard() }
+                                    Button(WindowsWords.text("Copy remote clipboard")) { controller.copyRemoteClipboard() }
+                                        .disabled(!controller.remoteClipboardAvailable)
+                                    Toggle(WindowsWords.text("Adaptive resolution"), isOn: $controller.automaticQuality)
+                                    Toggle(WindowsWords.text("Reconnect automatically"), isOn: $controller.autoReconnect)
+                                } label: { Image(systemName: "ellipsis.circle") }
+                            }.padding(8)
                         }
-                        HStack {
-                            Picker(WindowsWords.text("Mouse mode"), selection: $controller.mouseMode) {
-                                ForEach(NativeRDPMouseMode.allCases) { Text($0.title).tag($0) }
-                            }.pickerStyle(.segmented)
-                            Button { controller.click(.right) } label: { Image(systemName: "cursorarrow.click.2") }
-                                .accessibilityLabel(WindowsWords.text("Right click"))
-                            Button {
-                                leftHeld.toggle()
-                                controller.button(.left, down: leftHeld)
-                            } label: { Image(systemName: leftHeld ? "lock.fill" : "hand.draw") }
-                                .accessibilityLabel(WindowsWords.text("Hold left mouse button"))
-                            Button { showTextInput = true } label: { Image(systemName: "keyboard") }
-                                .accessibilityLabel(WindowsWords.text("Send text"))
-                            Menu {
-                                Button("Enter") { controller.tapKey(0x1c) }
-                                Button("Esc") { controller.tapKey(0x01) }
-                                Button("Tab") { controller.tapKey(0x0f) }
-                                Button("Backspace") { controller.tapKey(0x0e) }
-                                Button("↑") { controller.tapKey(0x48, extended: true) }
-                                Button("↓") { controller.tapKey(0x50, extended: true) }
-                                Button(WindowsWords.text("Send phone clipboard")) { controller.sendClipboard() }
-                                Button(WindowsWords.text("Request remote clipboard")) { controller.requestClipboard() }
-                                Button(WindowsWords.text("Copy remote clipboard")) { controller.copyRemoteClipboard() }
-                                    .disabled(!controller.remoteClipboardAvailable)
-                                Toggle(WindowsWords.text("Adaptive resolution"), isOn: $controller.automaticQuality)
-                                Toggle(WindowsWords.text("Reconnect automatically"), isOn: $controller.autoReconnect)
-                            } label: { Image(systemName: "ellipsis.circle") }
-                        }.padding(8).disabled(!controller.connected)
                     }
                 } else {
                     Form {
@@ -771,11 +879,10 @@ struct NativeRDPView: View {
                             Toggle(WindowsWords.text("Adaptive resolution"), isOn: $controller.automaticQuality)
                             Toggle(WindowsWords.text("Reconnect automatically"), isOn: $controller.autoReconnect)
                             Button(WindowsWords.text("Connect to Windows")) {
-                                guard let number = UInt16(port), number > 0 else { return }
-                                showingSession = true
-                                controller.connect(host: host, port: number, user: user, password: password, quality: quality)
-                                password = ""
-                            }.disabled(host.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || UInt16(port) == nil || port == "0" || user.isEmpty || password.isEmpty)
+                                controller.connect(host: host, port: port, user: user, password: password, quality: quality)
+                                if showingSession { password = "" }
+                            }.disabled(host.isEmpty || port.isEmpty || user.isEmpty || password.isEmpty)
+                            if !controller.error.isEmpty { Text(controller.error).foregroundStyle(.secondary) }
                         }
                         Text(WindowsWords.text("Native RDP help")).font(.caption)
                     }
@@ -789,8 +896,9 @@ struct NativeRDPView: View {
                 }
                 if showingSession {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button(WindowsWords.text("Disconnect")) {
-                            controller.disconnect(); showingSession = false; leftHeld = false
+                        Button(controller.progressMessage != nil || controller.connected
+                            ? WindowsWords.text("Disconnect") : WindowsWords.text("RDP connection settings")) {
+                            controller.disconnect(); leftHeld = false
                         }
                     }
                 }
@@ -812,10 +920,7 @@ struct NativeRDPView: View {
             .alert(WindowsWords.text("Verify server fingerprint"), isPresented: $confirmTrust) {
                 TextField("SHA-256", text: $verifyFingerprint).textInputAutocapitalization(.never).autocorrectionDisabled()
                 Button(WindowsWords.text("Trust for this session")) {
-                    if let pending = controller.pendingFingerprint,
-                       verifyFingerprint.trimmingCharacters(in: .whitespacesAndNewlines).caseInsensitiveCompare(pending) == .orderedSame {
-                        controller.acceptFingerprint(pending)
-                    }
+                    controller.acceptFingerprint(verifyFingerprint)
                     verifyFingerprint = ""
                 }
                 Button(WindowsWords.text("Cancel"), role: .cancel) { verifyFingerprint = "" }
@@ -831,7 +936,7 @@ struct NativeRDPView: View {
         .onChange(of: controller.mouseMode) { _, _ in controller.releaseInput(); leftHeld = false }
         .onChange(of: phase) { _, value in
             if value != .active { controller.releaseInput(); leftHeld = false }
-            if value == .background { controller.disconnect(); showingSession = false; password = "" }
+            if value == .background { controller.disconnect(); password = "" }
         }
         .onDisappear { controller.disconnect(); password = ""; typedText = "" }
     }

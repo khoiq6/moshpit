@@ -678,13 +678,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Native RDP help"
+            "value": "Enter the Windows IP address and the RDP port (usually 3389) separately. Use a Windows account with Remote Desktop access, such as Administrator or DOMAIN\\user. Prefer a private network or VPN. Verify the server certificate’s SHA-256 fingerprint using a trusted channel."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kết nối RDP trực tiếp tới Windows đã bật Remote Desktop. Ưu tiên kết nối qua mạng riêng/VPN. Chỉ xác nhận chứng chỉ sau khi đối chiếu SHA-256 qua kênh quản trị tin cậy. Chuột Bluetooth phụ thuộc hỗ trợ của iOS. Chụm hai ngón để phóng to, giữ lâu để bấm phải; vuốt hai ngón để cuộn. FPS hiển thị là số khung hình gửi tới bộ hiển thị; độ trễ khung hình không phải RTT mạng."
+            "value": "Nhập riêng IP của Windows và cổng RDP (thường là 3389). Dùng tài khoản Windows có quyền Remote Desktop, ví dụ Administrator hoặc DOMAIN\\user. Ưu tiên dùng mạng riêng hoặc VPN. Hãy đối chiếu dấu vân tay SHA-256 của chứng chỉ qua kênh tin cậy."
           }
         }
       }
@@ -742,13 +742,285 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fingerprint instruction"
+            "value": "Enter the SHA-256 fingerprint verified through your VPS console or administrator. Enter all 64 hexadecimal digits, with or without separators."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nhập SHA-256 đã xác minh từ quản trị viên máy chủ. Không sao chép dấu vân tay chỉ từ màn hình cảnh báo này."
+            "value": "Nhập dấu vân tay SHA-256 đã đối chiếu qua console của VPS hoặc quản trị viên. Nhập đủ 64 ký tự hex, có thể có hoặc không có dấu phân cách."
+          }
+        }
+      }
+    },
+    "RDP address could not be resolved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not find the RDP server. Check the IP address or hostname."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy máy chủ RDP. Kiểm tra địa chỉ IP hoặc tên máy chủ."
+          }
+        }
+      }
+    },
+    "RDP port refused the connection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The RDP port refused the connection. Check that Remote Desktop is enabled and the port is correct."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cổng RDP từ chối kết nối. Kiểm tra Windows đã bật Remote Desktop và bạn đã nhập đúng cổng."
+          }
+        }
+      }
+    },
+    "RDP server could not be reached": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not reach the RDP server. Check your network or VPN. For a local address, allow Moshpit to access the local network in Settings."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không truy cập được máy chủ RDP. Kiểm tra mạng hoặc VPN. Nếu dùng địa chỉ nội bộ, hãy bật quyền Mạng cục bộ cho Moshpit trong Cài đặt."
+          }
+        }
+      }
+    },
+    "RDP server did not respond in time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The RDP server did not answer in time. Check the IP, port and VPS firewall."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ RDP không phản hồi kịp. Kiểm tra IP, cổng và tường lửa của VPS."
+          }
+        }
+      }
+    },
+    "RDP port answered with another protocol": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That port did not answer as Remote Desktop. Check the IP and RDP port."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cổng này không phản hồi theo giao thức Remote Desktop. Kiểm tra IP và cổng RDP."
+          }
+        }
+      }
+    },
+    "RDP secure connection failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not establish a secure RDP connection. Check Windows updates and the server’s TLS and NLA settings."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thiết lập được kết nối RDP bảo mật. Kiểm tra bản cập nhật Windows và cấu hình TLS, NLA trên máy chủ."
+          }
+        }
+      }
+    },
+    "RDP account is not allowed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This account is not allowed to sign in through Remote Desktop. Check its permissions on Windows."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tài khoản này chưa được phép đăng nhập qua Remote Desktop. Kiểm tra quyền đăng nhập trên Windows."
+          }
+        }
+      }
+    },
+    "RDP sign-in failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not sign in to Windows through RDP. Check the username, password and account status."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đăng nhập được vào Windows qua RDP. Kiểm tra tên người dùng, mật khẩu và trạng thái tài khoản."
+          }
+        }
+      }
+    },
+    "RDP desktop did not appear": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The RDP session started, but the desktop image did not appear. Try the speed setting or use Windows App to compare."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên RDP đã bắt đầu nhưng màn hình chưa hiện. Thử chế độ Ưu tiên tốc độ hoặc dùng Windows App để đối chiếu."
+          }
+        }
+      }
+    },
+    "RDP licensing failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Windows server could not license the Remote Desktop session. Check its RDP licensing settings."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ Windows không cấp được giấy phép cho phiên Remote Desktop. Kiểm tra cấu hình giấy phép RDP trên máy chủ."
+          }
+        }
+      }
+    },
+    "RDP connection was interrupted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The RDP connection was interrupted. Check your network and reconnect."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết nối RDP bị gián đoạn. Kiểm tra mạng và kết nối lại."
+          }
+        }
+      }
+    },
+    "RDP connection closed before the desktop appeared": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The RDP connection closed before the desktop appeared. Check whether you can sign in with Windows App."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết nối RDP đã đóng trước khi hiện màn hình. Kiểm tra xem bạn có đăng nhập được bằng Windows App không."
+          }
+        }
+      }
+    },
+    "RDP could not continue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The RDP session could not continue. Try the same connection in Windows App to check server compatibility."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên RDP không thể tiếp tục. Thử cùng kết nối trong Windows App để kiểm tra khả năng tương thích với máy chủ."
+          }
+        }
+      }
+    },
+    "RDP fingerprint mismatch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The verified SHA-256 fingerprint does not match the server certificate. Check the value and try again."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dấu vân tay SHA-256 đã xác minh không khớp với chứng chỉ máy chủ. Kiểm tra lại giá trị rồi thử lại."
+          }
+        }
+      }
+    },
+    "Waiting for the RDP desktop": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for the Windows desktop…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chờ màn hình Windows…"
+          }
+        }
+      }
+    },
+    "Reconnecting RDP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconnecting to Windows…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang kết nối lại với Windows…"
+          }
+        }
+      }
+    },
+    "RDP connection settings": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection settings"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt kết nối"
           }
         }
       }
