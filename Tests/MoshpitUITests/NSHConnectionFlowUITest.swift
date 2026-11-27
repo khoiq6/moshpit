@@ -1,7 +1,7 @@
 import XCTest
 
 /// Adding a host and taking it away again, on the NSH pages: Home's +, the
-/// connection form (name, host, user, a password, which Save needs), the
+/// SSH option, the connection form (name, host, user and password), the
 /// saved row on Home, then its long-press menu's Delete… and the
 /// confirmation. Replaces MainFlowUITest's SwiftUI walk of the form. Runs
 /// on CI's simulator: the host is example.com's and never dialed (a saved
@@ -12,14 +12,22 @@ final class NSHConnectionFlowUITest: XCTestCase {
         continueAfterFailure = false
     }
 
+    @MainActor
+    private func openSSHForm(_ app: XCUIApplication) {
+        app.tapNSH("home-add")
+        let ssh = app.buttons["Linux / Unix SSH"].firstMatch
+        XCTAssertTrue(ssh.waitForExistence(timeout: NSHFlow.timeout), "the SSH option never appeared")
+        ssh.tap()
+        app.waitNSH("connection-form")
+    }
+
     /// Save waits for what a connection needs; Use Mosh shows its rows (the
     /// prediction, the mosh-server path) only while it is on: rows for a
     /// Mosh that is off would say something untrue.
     @MainActor
     func testSaveWaitsForAHostAndMoshShowsItsRowsOnlyWhenOn() throws {
         let app = NSHFlow.launch()
-        app.tapNSH("home-add")
-        app.waitNSH("connection-form")
+        openSSHForm(app)
         XCTAssertFalse(app.waitNSH("save-connection").isEnabled, "Save is enabled on an empty form")
 
         // A new connection starts with Mosh as Settings' default says
@@ -48,8 +56,7 @@ final class NSHConnectionFlowUITest: XCTestCase {
         let app = NSHFlow.launch()
         let name = "flow-box"
 
-        app.tapNSH("home-add")
-        app.waitNSH("connection-form")
+        openSSHForm(app)
         app.typeNSH("connection-form-name", name)
         app.typeNSH("connection-form-host", "devbox.example.com")
         app.typeNSH("connection-form-username", "dev")
