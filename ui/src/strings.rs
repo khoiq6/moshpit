@@ -58,7 +58,7 @@ pub fn plural_category(language: &str, n: i64) -> &'static str {
     let lower = language.to_ascii_lowercase();
     let primary = lower.split(['-', '_']).next().unwrap_or_default();
     match primary {
-        "ja" | "ko" | "zh" => "other",
+        "ja" | "ko" | "zh" | "vi" => "other",
         // French and Brazilian Portuguese: 0 and 1 are singular.
         "fr" => {
             if n <= 1 {
@@ -233,12 +233,14 @@ mod tests {
     fn the_catalog_languages_are_there() {
         let generated = generated();
         for language in [
-            "en", "de", "es", "fr", "ja", "ko", "pt-BR", "zh-Hans", "zh-Hant",
+            "en", "de", "es", "fr", "ja", "ko", "pt-BR", "vi", "zh-Hans", "zh-Hant",
         ] {
             assert!(generated.contains_key(language), "{language}");
         }
         assert_eq!(generated["zh-Hans"]["Recent log"], "最近日志");
         assert_eq!(generated["en"]["Recent log"], "Recent log");
+        assert_eq!(generated["vi"]["Recent log"], "Nhật ký gần đây");
+        assert_eq!(translations().translate("vi-VN", "Copy", &[]), "Sao chép");
         let translations = translations();
         assert_eq!(translations.translate("zh-Hant-TW", "Copy", &[]), "拷貝");
         assert_eq!(
@@ -264,7 +266,7 @@ mod tests {
         assert_eq!(plural_category("es", 1), "one");
         assert_eq!(plural_category("es", 0), "other");
         assert_eq!(plural_category("es", 1_000_000), "many");
-        for language in ["ja", "ko", "zh-Hans", "zh-Hant"] {
+        for language in ["ja", "ko", "vi", "zh-Hans", "zh-Hant"] {
             assert_eq!(plural_category(language, 1), "other", "{language}");
         }
         assert_eq!(plural_category("en", -1), "one");

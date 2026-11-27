@@ -1860,7 +1860,7 @@ def infoplist_english():
 # in languages that inflect, or a single string where they do not. SAME keys
 # are filled in automatically and must not appear in the files. Style notes and
 # the per-language glossary: scripts/gen/locales/STYLE.md.
-LOCALES = ["zh-Hant", "ko", "de", "es", "fr", "pt-BR"]
+LOCALES = ["zh-Hant", "ko", "de", "es", "fr", "pt-BR", "vi"]
 PLURAL_LOCALES = {"de", "es", "fr", "pt-BR"}
 LOCALE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "locales")
 

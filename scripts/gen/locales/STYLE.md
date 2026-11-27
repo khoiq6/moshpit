@@ -99,3 +99,10 @@ space around them where the language needs one.
 - tmux: sessão, janela, painel, aba, espaço de trabalho. Agente, prompt, hooks, relay.
   Chaves: chave pública/privada, impressão digital, frase-senha, chave do host.
 - Branch, worktree, shell e prompt ficam em inglês, como na comunidade dev brasileira.
+
+## vi (Tiếng Việt)
+
+- Use concise, natural Vietnamese and preserve the technical meaning.
+- Keep SSH, Mosh, tmux, herdr, Codex, agent, terminal, shell, git worktree, hook, PATH, and command literals intact.
+- Session = phiên; pane = ngăn; host = máy chủ; jump host = máy chủ trung gian; private key = khóa riêng tư; passphrase = cụm mật khẩu.
+- Vietnamese has a single plural form; preserve every format placeholder and its argument order.

@@ -26,6 +26,11 @@ jobs:
           rustup toolchain install
           rustup target add aarch64-apple-ios
           rustc --version
+      - name: Check localization catalogs
+        run: |
+          python3 scripts/gen/gen_xcstrings.py
+          python3 scripts/gen/gen_nsh_strings.py --check
+          git diff --exit-code -- Moshpit/Resources Extensions ui/locales
       - name: Generate project
         run: xcodegen generate
       - name: Build unsigned IPA
@@ -34,11 +39,12 @@ jobs:
         run: |
           test -s build/Moshpit.ipa
           unzip -tq build/Moshpit.ipa
+          python3 -c 'import zipfile; z=zipfile.ZipFile("build/Moshpit.ipa"); assert any(n.startswith("Payload/Moshpit.app/vi.lproj/") for n in z.namelist()), "Vietnamese localization missing from IPA"'
           shasum -a 256 build/Moshpit.ipa
       - name: Upload IPA
         uses: actions/upload-artifact@v7
         with:
-          name: Moshpit-unsigned-IPA
+          name: Moshpit-VI-unsigned-IPA
           path: build/Moshpit.ipa
           if-no-files-found: error
           retention-days: 14

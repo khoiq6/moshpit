@@ -11,7 +11,7 @@
 //! Bash: rm -rf build — mac-mini · work
 //! ```
 //!
-//! The two sentences and the duration come in the app's nine languages
+//! The two sentences and the duration come in the app's ten languages
 //! ([`Language`]): the sentences are this file's own (the notification
 //! service's string catalog held them until it ran on this crate, E7b), the
 //! durations what Foundation's unit formatter writes on macOS 27.
@@ -35,12 +35,13 @@ pub enum Language {
     Ja,
     Ko,
     PtBr,
+    Vi,
     ZhHans,
     ZhHant,
 }
 
 impl Language {
-    pub const ALL: [Self; 9] = [
+    pub const ALL: [Self; 10] = [
         Self::En,
         Self::De,
         Self::Es,
@@ -48,6 +49,7 @@ impl Language {
         Self::Ja,
         Self::Ko,
         Self::PtBr,
+        Self::Vi,
         Self::ZhHans,
         Self::ZhHant,
     ];
@@ -62,12 +64,13 @@ impl Language {
             Self::Ja => "ja",
             Self::Ko => "ko",
             Self::PtBr => "pt-BR",
+            Self::Vi => "vi",
             Self::ZhHans => "zh-Hans",
             Self::ZhHant => "zh-Hant",
         }
     }
 
-    /// The best of the nine for a BCP 47 tag (`zh-TW`, `pt_PT`, `de-AT`…);
+    /// The best of the ten for a BCP 47 tag (`zh-TW`, `pt_PT`, `de-AT`…);
     /// English for anything else.
     pub fn from_tag(tag: &str) -> Self {
         let tag = tag.replace('_', "-").to_ascii_lowercase();
@@ -79,6 +82,7 @@ impl Language {
             "ja" => Self::Ja,
             "ko" => Self::Ko,
             "pt" => Self::PtBr,
+            "vi" => Self::Vi,
             "zh" => {
                 let rest: Vec<&str> = parts.collect();
                 if rest.contains(&"hant") || rest.iter().any(|p| matches!(*p, "tw" | "hk" | "mo")) {
@@ -101,6 +105,7 @@ impl Language {
             Self::Ja => "✓ %@ が完了しました",
             Self::Ko => "✓ %@ 완료",
             Self::PtBr => "✓ %@ terminou",
+            Self::Vi => "✓ %@ đã xong",
             Self::ZhHans | Self::ZhHant => "✓ %@ 已完成",
         }
     }
@@ -115,6 +120,7 @@ impl Language {
             Self::Ja => "%@ が待っています",
             Self::Ko => "%@ 대기 중",
             Self::PtBr => "%@ precisa de você",
+            Self::Vi => "%@ đang chờ bạn",
             Self::ZhHans | Self::ZhHant => "%@ 在等你",
         }
     }
@@ -168,6 +174,13 @@ impl Language {
                 hours: ("", " h"),
                 minutes: ("", " min"),
                 join: " e ",
+                group: ".",
+                min_grouping: 1,
+            },
+            Self::Vi => Units {
+                hours: ("", " giờ"),
+                minutes: ("", " phút"),
+                join: " ",
                 group: ".",
                 min_grouping: 1,
             },
@@ -811,6 +824,10 @@ mod tests {
         assert_eq!(Language::from_tag("zh-Hant-HK"), Language::ZhHant);
         assert_eq!(Language::from_tag("pt_PT"), Language::PtBr);
         assert_eq!(Language::from_tag("de-AT"), Language::De);
+        assert_eq!(Language::from_tag("vi-VN"), Language::Vi);
+        assert_eq!(Language::Vi.finished_template(), "✓ %@ đã xong");
+        assert_eq!(Language::Vi.needs_you_template(), "%@ đang chờ bạn");
+        assert_eq!(duration(3660, Language::Vi).as_deref(), Some("1 giờ 1 phút"));
         assert_eq!(Language::from_tag("ru"), Language::En);
         assert_eq!(Language::from_tag(""), Language::En);
     }

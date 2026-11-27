@@ -45,6 +45,12 @@
             "value": "A câmera serve para fotografar quadros brancos, rascunhos ou telas e anexar a uma sessão de terminal. As fotos perdem os dados de localização neste aparelho e só são enviadas ao seu próprio servidor."
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera cho phép bạn chụp ảnh bảng trắng, bản phác thảo hoặc màn hình rồi đính kèm vào phiên terminal. Dữ liệu vị trí được xóa khỏi ảnh ngay trên thiết bị này; ảnh chỉ được tải lên máy chủ của bạn."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -101,6 +107,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Desbloqueia as chaves SSH com Face ID"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng Face ID để mở khóa SSH."
           }
         },
         "zh-Hans": {
@@ -161,6 +173,12 @@
             "value": "O Moshpit conecta por SSH e mosh (UDP) aos servidores da sua rede local. Sem esta permissão, conexões a hosts como 192.168.x.x falham."
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moshpit kết nối máy chủ trên mạng cục bộ qua SSH và mosh (UDP). Nếu không cấp quyền này, kết nối đến máy chủ LAN (ví dụ 192.168.x.x) sẽ thất bại."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -219,6 +237,12 @@
             "value": "A entrada de voz usa o microfone para você ditar comandos e prompts direto no terminal. O áudio é transcrito neste aparelho, com o modelo de voz da Apple ou com um modelo de voz que você baixou, e não é enviado para lugar nenhum."
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tính năng nhập bằng giọng nói sử dụng micrô để bạn đọc lệnh và yêu cầu vào terminal. Âm thanh được chuyển thành văn bản ngay trên thiết bị này bằng mô hình giọng nói của Apple hoặc mô hình bạn tải về, và không bao giờ được tải lên nơi khác."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -275,6 +299,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "O ditado reconhece a fala no próprio aparelho. Nem sua voz nem a transcrição saem dele; o Moshpit não usa reconhecimento em servidor."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tính năng đọc chính tả nhận dạng giọng nói ngay trên thiết bị. Giọng nói và bản chép lời không bao giờ rời khỏi thiết bị này — Moshpit không dùng nhận dạng trên máy chủ."
           }
         },
         "zh-Hans": {

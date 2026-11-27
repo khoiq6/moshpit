@@ -105,6 +105,12 @@
             }
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld đã xong"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -223,6 +229,12 @@
             }
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld đang chờ bạn"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -273,6 +285,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld offline"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ngoại tuyến"
           }
         },
         "zh-Hans": {
@@ -327,6 +345,12 @@
             "value": "%lld trabalhando"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld đang làm việc"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -377,6 +401,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "+%lld a mais"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%lld khác"
           }
         },
         "zh-Hans": {
@@ -431,6 +461,12 @@
             "value": "Status dos agentes"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trạng thái agent"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -483,6 +519,12 @@
             "value": "O status dos seus agentes do Moshpit em tempo real."
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trạng thái trực tiếp của các agent Moshpit."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -530,6 +572,12 @@
           }
         },
         "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moshpit"
+          }
+        },
+        "vi": {
           "stringUnit": {
             "state": "translated",
             "value": "Moshpit"
@@ -587,6 +635,12 @@
             "value": "Moshpit · nenhum agente"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moshpit · không có agent"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -637,6 +691,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "agentes"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI"
           }
         },
         "zh-Hans": {
@@ -691,6 +751,12 @@
             "value": "concluído"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đã xong"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -741,6 +807,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "ocioso"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang rảnh"
           }
         },
         "zh-Hans": {
@@ -795,6 +867,12 @@
             "value": "precisa de você"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang chờ bạn"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -845,6 +923,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "nenhum agente ativo"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "không có agent hoạt động"
           }
         },
         "zh-Hans": {
@@ -899,6 +983,12 @@
             "value": "offline"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ngoại tuyến"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -949,6 +1039,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "pausado — abra o Moshpit"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đã tạm dừng — mở Moshpit"
           }
         },
         "zh-Hans": {
@@ -1003,6 +1099,12 @@
             "value": "pausado — abra o Moshpit para atualizar"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đã tạm dừng — mở Moshpit để làm mới"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1055,6 +1157,12 @@
             "value": "espera"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chờ"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -1105,6 +1213,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "trabalhando"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang làm việc"
           }
         },
         "zh-Hans": {

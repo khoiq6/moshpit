@@ -39,6 +39,12 @@
             "value": "%lld imagens — escolha o agente que deve vê-las"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ảnh — chọn agent nhận ảnh"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -89,6 +95,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "1 imagem — escolha o agente que deve vê-la"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 ảnh — chọn agent nhận ảnh"
           }
         },
         "zh-Hans": {
@@ -143,6 +155,12 @@
             "value": "A lista de agentes é de %lld min atrás — os destinos podem ter mudado. As imagens na fila são entregues quando a sessão voltar a ficar ativa."
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danh sách agent từ %lld phút trước — các agent đích có thể đã thay đổi. Ảnh trong hàng đợi sẽ được gửi khi phiên hoạt động trở lại."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -193,6 +211,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cancelar"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hủy"
           }
         },
         "zh-Hans": {
@@ -247,6 +271,12 @@
             "value": "Não foi possível pôr as imagens na fila"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xếp ảnh vào hàng đợi"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -297,6 +327,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Entregue como um caminho enviado assim que a sessão estiver ativa — na hora, se o Moshpit estiver conectado agora."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Được gửi dưới dạng đường dẫn tệp tải lên ngay khi phiên hoạt động — tức thì nếu Moshpit đang kết nối."
           }
         },
         "zh-Hans": {
@@ -351,6 +387,12 @@
             "value": "O Moshpit envia e entrega o caminho assim que essa sessão estiver ativa."
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moshpit tải lên và chuyển đường dẫn ngay khi phiên hoạt động."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -401,6 +443,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nenhum agente para enviar"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có agent để gửi"
           }
         },
         "zh-Hans": {
@@ -455,6 +503,12 @@
             "value": "Abra o Moshpit e conecte-se a uma sessão com um agente rodando — aqui aparecem todos os agentes que o Moshpit está acompanhando."
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trước tiên, mở Moshpit và kết nối phiên có agent đang chạy — bảng chia sẻ liệt kê mọi agent Moshpit đang theo dõi."
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -505,6 +559,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Na fila para %@"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã xếp hàng cho %@"
           }
         },
         "zh-Hans": {
@@ -559,6 +619,12 @@
             "value": "Enviar para um agente"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gửi cho agent"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -609,6 +675,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "concluído"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đã xong"
           }
         },
         "zh-Hans": {
@@ -663,6 +735,12 @@
             "value": "ocioso"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang rảnh"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -715,6 +793,12 @@
             "value": "precisa de você"
           }
         },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang chờ bạn"
+          }
+        },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
@@ -765,6 +849,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "trabalhando"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "đang làm việc"
           }
         },
         "zh-Hans": {
