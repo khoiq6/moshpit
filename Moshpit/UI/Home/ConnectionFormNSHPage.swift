@@ -52,6 +52,7 @@ struct ConnectionFormNSHPage: View {
     init(store: ConnectionStore, keychain: KeychainService, existing: ServerConnection? = nil,
          secretMissing: Bool = false,
          nested: Bool = false,
+         windowsSSH: Bool = false,
          onSaved: ((UUID) -> Void)? = nil,
          onDelete: ((ServerConnection) -> Void)? = nil,
          releaseSecret: @escaping (UUID, String) async -> Void = { _, _ in }) {
@@ -68,6 +69,11 @@ struct ConnectionFormNSHPage: View {
         if nested {
             draft = existing.map { ConnectionDraft(jumpHost: $0) }
                 ?? ConnectionDraft(newJumpHostWith: .shared)
+        } else if windowsSSH && existing == nil {
+            // Windows OpenSSH is a plain shell unless the user chooses otherwise.
+            let plain = connectionDraftNew(moshByDefault: false)
+            let mux = connectionDraftHandle(draft: plain, messageJson: #"{"ev":"set","key":"mux","value":"none"}"#).draft
+            draft = connectionDraftHandle(draft: mux, messageJson: #"{"ev":"set","key":"username","value":"Administrator"}"#).draft
         } else {
             draft = existing.map { ConnectionDraft($0, secretMissing: secretMissing) }
                 ?? ConnectionDraft(newWith: .shared)

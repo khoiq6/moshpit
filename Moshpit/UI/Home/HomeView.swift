@@ -26,6 +26,9 @@ struct HomeView: View {
     @State private var showSettings = false
     @State private var showAddConnection = false
     #endif
+    @State private var showConnectionKind = false
+    @State private var windowsSSH = false
+    @State private var showWindowsDesktop = false
     @State private var editingConnection: ServerConnection?
     @State private var deletingConnection: ServerConnection?
     /// The "Jump hosts (N)" row's list.
@@ -85,7 +88,7 @@ struct HomeView: View {
     /// + on Home: adds a new connection. No free-tier cap — every feature is
     /// unlocked for everyone.
     private func handleAdd() {
-        showAddConnection = true
+        showConnectionKind = true
     }
 
     /// Start (or resume) a connection in-place. Binds the session to `connecting`
@@ -192,8 +195,17 @@ struct HomeView: View {
                 open(id)
             })
         }
+        .confirmationDialog(WindowsWords.text("Connection type"), isPresented: $showConnectionKind, titleVisibility: .visible) {
+            Button(WindowsWords.text("Linux / Unix SSH")) { windowsSSH = false; showAddConnection = true }
+            Button(WindowsWords.text("Windows SSH (PowerShell / CMD)")) { windowsSSH = true; showAddConnection = true }
+            Button(WindowsWords.text("Windows Remote Desktop (RDP gateway)")) { showWindowsDesktop = true }
+            Button("Cancel", role: .cancel) {}
+        }
         .appSheet(isPresented: $showAddConnection) {
-            connectionForm(existing: nil)
+            connectionForm(existing: nil, windowsSSH: windowsSSH)
+        }
+        .fullScreenCover(isPresented: $showWindowsDesktop) {
+            WindowsDesktopView()
         }
         .appSheet(item: $editingConnection) { connection in
             connectionForm(existing: connection)
@@ -219,9 +231,10 @@ struct HomeView: View {
     }
 
     /// The add / edit form (``ConnectionFormNSHPage``).
-    private func connectionForm(existing: ServerConnection?) -> some View {
+    private func connectionForm(existing: ServerConnection?, windowsSSH: Bool = false) -> some View {
         ConnectionFormNSHPage(store: store, keychain: keychain, existing: existing,
                               secretMissing: existing.map { store.secretMissing.contains($0.id) } ?? false,
+                              windowsSSH: windowsSSH,
                               onDelete: { delete($0) }, releaseSecret: releaseSecret)
     }
 

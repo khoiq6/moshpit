@@ -1,0 +1,294 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Connection type": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection type"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loại kết nối"
+          }
+        }
+      }
+    },
+    "Linux / Unix SSH": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Linux / Unix SSH"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Linux / Unix SSH"
+          }
+        }
+      }
+    },
+    "Windows SSH (PowerShell / CMD)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows SSH (PowerShell / CMD)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows SSH (PowerShell / CMD)"
+          }
+        }
+      }
+    },
+    "Windows Remote Desktop (RDP gateway)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows Remote Desktop (RDP gateway)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn hình Windows (RDP qua gateway)"
+          }
+        }
+      }
+    },
+    "Secure RDP gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secure RDP gateway"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway RDP bảo mật"
+          }
+        }
+      }
+    },
+    "Connect to Windows": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect to Windows"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết nối Windows"
+          }
+        }
+      }
+    },
+    "Gateway explanation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the HTTPS address of an Apache Guacamole gateway you manage. Sign in there and select a configured Windows RDP connection. A raw IP:3389 is not a gateway URL."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cần địa chỉ HTTPS của Apache Guacamole do bạn quản lý. Đăng nhập trên gateway, chọn máy Windows đã cấu hình RDP. Không nhập IP cổng 3389 trực tiếp vào ô này."
+          }
+        }
+      }
+    },
+    "Controls and performance": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controls and performance"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Điều khiển và hiệu năng"
+          }
+        }
+      }
+    },
+    "Could not reach the gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not reach the gateway"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể truy cập gateway"
+          }
+        }
+      }
+    },
+    "Reconnect": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconnect"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết nối lại"
+          }
+        }
+      }
+    },
+    "Show controls": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show controls"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiện thanh điều khiển"
+          }
+        }
+      }
+    },
+    "Full screen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full screen"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toàn màn hình"
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đóng"
+          }
+        }
+      }
+    },
+    "Mouse and touch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mouse and touch"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chuột và cảm ứng"
+          }
+        }
+      }
+    },
+    "Input explanation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swipe in from the left edge to open the Guacamole menu. Choose absolute touchscreen mouse or relative trackpad mode. Use a Bluetooth mouse if available; pinch to zoom. Input is handled by the gateway client."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vuốt từ mép trái để mở menu Guacamole. Chọn chế độ chuột cảm ứng trực tiếp hoặc chuột tương đối (trackpad). Dùng chuột Bluetooth nếu có; chụm hai ngón để thu phóng. Các thao tác do gateway xử lý."
+          }
+        }
+      }
+    },
+    "Keyboard explanation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use a Bluetooth keyboard or Guacamole's on-screen keyboard. Its text input mode supports Vietnamese IME input."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng bàn phím Bluetooth hoặc bàn phím ảo trong menu Guacamole. Chế độ nhập văn bản hỗ trợ gõ tiếng Việt qua IME."
+          }
+        }
+      }
+    },
+    "Performance": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Performance"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiệu năng"
+          }
+        }
+      }
+    },
+    "Performance explanation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For lower latency, locate the gateway near Windows, enable WebSocket and RDP Graphics Pipeline (GFX) when supported. Select a lower-resolution connection on weak networks. Speed/Balanced/Quality profiles are configured on the gateway; the app cannot force 60 FPS."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Để giảm độ trễ, đặt gateway gần VPS Windows, bật WebSocket và RDP Graphics Pipeline (GFX) nếu máy chủ hỗ trợ. Chọn kết nối độ phân giải thấp hơn khi mạng yếu. Các cấu hình Tốc độ/Cân bằng/Chất lượng được đặt trên gateway; ứng dụng không ép được 60 FPS."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

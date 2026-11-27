@@ -1,6 +1,8 @@
 name: Build Moshpit IPA
 on:
   workflow_dispatch:
+  push:
+    branches: [vi-windows-rdp]
 permissions:
   contents: read
 jobs:
@@ -31,6 +33,15 @@ jobs:
           python3 scripts/gen/gen_xcstrings.py
           python3 scripts/gen/gen_nsh_strings.py --check
           git diff --exit-code -- Moshpit/Resources Extensions ui/locales
+      - name: Cache Rust dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+          key: rust-deps-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'rust-toolchain.toml') }}
+          restore-keys: rust-deps-${{ runner.os }}-
       - name: Generate project
         run: xcodegen generate
       - name: Build unsigned IPA
@@ -44,7 +55,7 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v7
         with:
-          name: Moshpit-VI-unsigned-IPA
+          name: Moshpit-VI-Windows-unsigned-IPA
           path: build/Moshpit.ipa
           if-no-files-found: error
           retention-days: 14
