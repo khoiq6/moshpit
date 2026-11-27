@@ -122,7 +122,8 @@ private struct WindowsGatewaySurface: UIViewRepresentable {
 struct WindowsDesktopView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var browser = WindowsGatewayBrowser()
-    @AppStorage("windows.gateway.address") private var address = ""
+    @AppStorage("windows.gateway.address") private var savedAddress = ""
+    @State private var address = ""
     @State private var showHelp = false
     @State private var immersive = false
 
@@ -168,6 +169,7 @@ struct WindowsDesktopView: View {
                                 .autocorrectionDisabled()
                             Button(WindowsWords.text("Connect to Windows")) {
                                 if let url = WindowsGatewayAddress.parse(address) {
+                                    savedAddress = url.absoluteString
                                     address = url.absoluteString
                                     browser.open(url)
                                 }
@@ -218,6 +220,7 @@ struct WindowsDesktopView: View {
                 }
             }
         }
+        .onAppear { if address.isEmpty { address = savedAddress } }
         .onDisappear { browser.close() }
     }
 }
