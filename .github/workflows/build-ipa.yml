@@ -1,0 +1,44 @@
+name: Build Moshpit IPA
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ipa:
+    runs-on: xcode-27
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)
+          [ -n "$XCODE" ] || XCODE=/Applications/Xcode.app
+          sudo xcode-select -s "$XCODE/Contents/Developer"
+          xcodebuild -version
+      - name: Install build dependencies
+        run: |
+          brew install xcodegen
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          rustup toolchain install
+          rustup target add aarch64-apple-ios
+          rustc --version
+      - name: Generate project
+        run: xcodegen generate
+      - name: Build unsigned IPA
+        run: bash scripts/release/build-ipa.sh Release
+      - name: Verify IPA
+        run: |
+          test -s build/Moshpit.ipa
+          unzip -tq build/Moshpit.ipa
+          shasum -a 256 build/Moshpit.ipa
+      - name: Upload IPA
+        uses: actions/upload-artifact@v7
+        with:
+          name: Moshpit-unsigned-IPA
+          path: build/Moshpit.ipa
+          if-no-files-found: error
+          retention-days: 14
