@@ -1,5 +1,7 @@
 name: Build Moshpit IPA
 on:
+  push:
+    branches: [vi-vps-pro-test]
   workflow_dispatch:
     inputs:
       verified:
@@ -11,7 +13,7 @@ permissions:
   contents: read
 jobs:
   ipa:
-    if: ${{ inputs.verified == true }}
+    if: ${{ github.ref == 'refs/heads/vi-vps-pro-test' || inputs.verified == true }}
     runs-on: xcode-27
     timeout-minutes: 150
     steps:
@@ -60,7 +62,7 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v7
         with:
-          name: Moshpit-VI-VPS-Pro-unsigned-IPA
+          name: Moshpit-VI-VPS-Pro-test-unsigned-IPA
           path: build/Moshpit.ipa
           if-no-files-found: error
           retention-days: 14
