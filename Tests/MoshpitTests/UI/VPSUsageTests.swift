@@ -6,5 +6,6 @@ final class VPSUsageTests: XCTestCase {
         XCTAssertNil(VPSUsage.parse("101 20 20"))
         XCTAssertNil(VPSUsage.parse("nan 20 20"))
         XCTAssertNil(VPSUsage.parse("20 20"))
+        XCTAssertNil(VPSUsage.parse("20 20 20 garbage"))
     }
 }

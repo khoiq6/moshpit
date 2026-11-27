@@ -13,8 +13,9 @@ struct VPSUsage {
     let ram: Double
     let disk: Double
     static func parse(_ output: String) -> Self? {
-        let values = output.split(whereSeparator: \.isWhitespace).compactMap { Double($0) }
-        guard values.count == 3, values.allSatisfy({ $0.isFinite && (0...100).contains($0) }) else { return nil }
+        let tokens = output.split(whereSeparator: \.isWhitespace)
+        let values = tokens.compactMap { Double($0) }
+        guard tokens.count == 3, values.count == 3, values.allSatisfy({ $0.isFinite && (0...100).contains($0) }) else { return nil }
         return Self(cpu: values[0], ram: values[1], disk: values[2])
     }
 }
@@ -50,6 +51,7 @@ struct VPSWorkspaceView: View {
     @State private var unlocked = false
     @State private var authenticating = false
     @State private var authError = false
+    @State private var authGeneration = UUID()
 
     var body: some View {
         NavigationStack {
@@ -99,14 +101,21 @@ struct VPSWorkspaceView: View {
             .toolbar { ToolbarItem(placement: .cancellationAction) {
                 Button(WorkspaceWords.text("Close")) { dismiss() }
             } }
-            .onChange(of: phase) { _, value in
-                if value == .background { unlocked = false }
-            }
-            .onChange(of: deviceAuth) { _, enabled in
-                if enabled { unlocked = false; unlock() }
-            }
-            .task { if deviceAuth && !unlocked { unlock() } }
         }
+        // Reset the entire navigation stack when relocking, including a
+        // previously pushed host detail or editor.
+        .id(deviceAuth && !unlocked)
+        .onChange(of: phase) { _, value in
+            if value == .background {
+                authGeneration = UUID()
+                unlocked = false
+                authenticating = false
+            }
+        }
+        .onChange(of: deviceAuth) { _, enabled in
+            if enabled { unlocked = false; unlock() }
+        }
+        .task { if deviceAuth && !unlocked { unlock() } }
     }
 
     private func unlock() {
@@ -118,9 +127,13 @@ struct VPSWorkspaceView: View {
             return
         }
         authenticating = true
+        let generation = UUID()
+        authGeneration = generation
         Task { @MainActor in
-            defer { authenticating = false }
-            unlocked = (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: WorkspaceWords.text("Unlock"))) == true
+            let passed = (try? await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: WorkspaceWords.text("Unlock"))) == true
+            guard generation == authGeneration else { return }
+            authenticating = false
+            unlocked = passed
             authError = !unlocked
         }
     }
@@ -205,7 +218,7 @@ private struct VPSHostTools: View {
                 do { try await Task.sleep(for: .seconds(10)) } catch { return }
             }
         }
-        .sheet(isPresented: $showFiles) {
+        .appSheet(isPresented: $showFiles) {
             if let folder, let active { RemoteFolderNSHSheet(folder: folder, files: active.remoteFileAccess) }
         }
         .confirmationDialog(WorkspaceWords.text("Restart server?"), isPresented: $confirmRestart, titleVisibility: .visible) {
@@ -230,7 +243,9 @@ private struct VPSHostTools: View {
         guard !busy, !windows, let active else { return }
         busy = true
         defer { busy = false }
-        usage = await active.runOnHost(VPSCommands.usage).flatMap(VPSUsage.parse)
+        let result = await active.runOnHost(VPSCommands.usage)
+        guard !windows else { return }
+        usage = result.flatMap(VPSUsage.parse)
         if usage == nil { output = WorkspaceWords.text("Read failed") }
     }
     private func run(_ command: String) async {
