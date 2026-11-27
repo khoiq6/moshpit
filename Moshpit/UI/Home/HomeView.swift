@@ -29,6 +29,7 @@ struct HomeView: View {
     @State private var showConnectionKind = false
     @State private var windowsSSH = false
     @State private var showWindowsDesktop = false
+    @State private var showNativeRDP = false
     @State private var showVPSWorkspace = false
     @State private var editingConnection: ServerConnection?
     @State private var deletingConnection: ServerConnection?
@@ -199,6 +200,7 @@ struct HomeView: View {
         .confirmationDialog(WindowsWords.text("Connection type"), isPresented: $showConnectionKind, titleVisibility: .visible) {
             Button(WindowsWords.text("Linux / Unix SSH")) { windowsSSH = false; showAddConnection = true }
             Button(WindowsWords.text("Windows SSH (PowerShell / CMD)")) { windowsSSH = true; showAddConnection = true }
+            Button(WindowsWords.text("Windows RDP native")) { showNativeRDP = true }
             Button(WindowsWords.text("Windows Remote Desktop (RDP gateway)")) { showWindowsDesktop = true }
             Button(WorkspaceWords.text("VPS workspace")) { showVPSWorkspace = true }
             Button("Cancel", role: .cancel) {}
@@ -214,9 +216,12 @@ struct HomeView: View {
                 showVPSWorkspace = false
                 Task { @MainActor in
                     try? await Task.sleep(for: .milliseconds(400))
-                    showWindowsDesktop = true
+                    showNativeRDP = true
                 }
             })
+        }
+        .fullScreenCover(isPresented: $showNativeRDP) {
+            NativeRDPView()
         }
         .fullScreenCover(isPresented: $showWindowsDesktop) {
             WindowsDesktopView()

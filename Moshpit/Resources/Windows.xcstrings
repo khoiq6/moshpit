@@ -288,6 +288,470 @@
           }
         }
       }
+    },
+    "Windows RDP native": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows RDP native"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Windows RDP trực tiếp"
+          }
+        }
+      }
+    },
+    "Prefer speed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prefer speed"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ưu tiên tốc độ"
+          }
+        }
+      }
+    },
+    "Balanced": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanced"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cân bằng"
+          }
+        }
+      }
+    },
+    "Prefer quality": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prefer quality"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ưu tiên chất lượng"
+          }
+        }
+      }
+    },
+    "Direct touch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Direct touch"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cảm ứng"
+          }
+        }
+      }
+    },
+    "Trackpad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trackpad"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chuột ảo"
+          }
+        }
+      }
+    },
+    "Invalid RDP address or credentials": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid RDP address or credentials"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ hoặc thông tin đăng nhập RDP không hợp lệ"
+          }
+        }
+      }
+    },
+    "Untrusted RDP certificate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Untrusted RDP certificate"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chứng chỉ máy chủ RDP chưa được tin cậy"
+          }
+        }
+      }
+    },
+    "RDP session ended": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RDP session ended"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên RDP đã kết thúc"
+          }
+        }
+      }
+    },
+    "Unicode input unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unicode input unavailable"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ không hỗ trợ nhập Unicode"
+          }
+        }
+      }
+    },
+    "Connecting RDP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting RDP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang kết nối RDP"
+          }
+        }
+      }
+    },
+    "Verify server fingerprint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify server fingerprint"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xác minh dấu vân tay máy chủ"
+          }
+        }
+      }
+    },
+    "Mouse mode": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mouse mode"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chế độ chuột"
+          }
+        }
+      }
+    },
+    "Right click": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right click"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chuột phải"
+          }
+        }
+      }
+    },
+    "Hold left mouse button": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold left mouse button"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giữ nút chuột trái"
+          }
+        }
+      }
+    },
+    "Send text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send text"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gửi văn bản"
+          }
+        }
+      }
+    },
+    "Send phone clipboard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send phone clipboard"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gửi bảng nhớ tạm iPhone"
+          }
+        }
+      }
+    },
+    "Request remote clipboard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request remote clipboard"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yêu cầu bảng nhớ tạm từ Windows"
+          }
+        }
+      }
+    },
+    "Copy remote clipboard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy remote clipboard"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao chép bảng nhớ tạm Windows"
+          }
+        }
+      }
+    },
+    "Adaptive resolution": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaptive resolution"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tự điều chỉnh độ phân giải"
+          }
+        }
+      }
+    },
+    "Reconnect automatically": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconnect automatically"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tự kết nối lại"
+          }
+        }
+      }
+    },
+    "Server address": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server address"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ máy chủ"
+          }
+        }
+      }
+    },
+    "Username": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Username"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên đăng nhập"
+          }
+        }
+      }
+    },
+    "Password": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mật khẩu"
+          }
+        }
+      }
+    },
+    "Native RDP help": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native RDP help"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết nối RDP trực tiếp tới Windows đã bật Remote Desktop. Ưu tiên kết nối qua mạng riêng/VPN. Chỉ xác nhận chứng chỉ sau khi đối chiếu SHA-256 qua kênh quản trị tin cậy. Chuột Bluetooth phụ thuộc hỗ trợ của iOS. Chụm hai ngón để phóng to, giữ lâu để bấm phải; vuốt hai ngón để cuộn. FPS hiển thị là số khung hình gửi tới bộ hiển thị; độ trễ khung hình không phải RTT mạng."
+          }
+        }
+      }
+    },
+    "Disconnect": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnect"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngắt kết nối"
+          }
+        }
+      }
+    },
+    "Trust for this session": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trust for this session"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tin cậy trong phiên này"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hủy"
+          }
+        }
+      }
+    },
+    "Fingerprint instruction": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fingerprint instruction"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập SHA-256 đã xác minh từ quản trị viên máy chủ. Không sao chép dấu vân tay chỉ từ màn hình cảnh báo này."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

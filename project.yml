@@ -44,6 +44,10 @@ packages:
   # the app/extension boundary is a module boundary the compiler checks.
   MoshpitKit:
     path: Packages/MoshpitKit
+  # Pinned native Apple RDP protocol, hardware video decode and input.
+  RDPKit:
+    url: https://github.com/steelbrain/RDPKit.git
+    revision: 086985d0f9fd9629e8ff231128e5784cef4644f5
   # Local Whisper for dictation (Settings → VOICE INPUT → Recognition).
   # Apple's own transcribers take exactly ONE locale and have no
   # code-switching mode, so a sentence carrying English command names inside
@@ -268,6 +272,8 @@ targets:
           SWIFT_COMPILATION_MODE: $(MOSHPIT_SWIFT_COMPILATION_MODE)
     dependencies:
       - package: MoshpitKit
+      - package: RDPKit
+        product: RDPKit
       - package: WhisperKit
         product: WhisperKit
       - package: SherpaOnnx
