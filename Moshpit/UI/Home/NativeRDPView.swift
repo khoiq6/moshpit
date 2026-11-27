@@ -128,24 +128,18 @@ final class NativeRDPController: ObservableObject {
         let recipient = live.recipient(self)
         let approved = approvedFingerprint
         live.start(events: .init(
-            onFrameDecoded: { presentation, received, decoded, timing in
-                recipient.deliver { controller in
-                    guard controller.generation == id else { return }
-                    controller.metrics.recordDecodedFrame(presentation.frame, receivedAt: received, decodedAt: decoded, timing: timing)
-                    controller.receive(presentation, at: received)
-                }
+            onFrameDecoded: { [weak self] presentation, received, decoded, timing in
+                guard let self, self.generation == id else { return }
+                self.metrics.recordDecodedFrame(presentation.frame, receivedAt: received, decodedAt: decoded, timing: timing)
+                self.receive(presentation, at: received)
             },
-            onFrameDecodeFailed: { date, reason in
-                recipient.deliver { controller in
-                    guard controller.generation == id else { return }
-                    controller.metrics.recordDecodeFailure(receivedAt: date, errorDescription: reason)
-                }
+            onFrameDecodeFailed: { [weak self] date, reason in
+                guard let self, self.generation == id else { return }
+                self.metrics.recordDecodeFailure(receivedAt: date, errorDescription: reason)
             },
-            onWireReceive: { sample in
-                recipient.deliver { controller in
-                    guard controller.generation == id else { return }
-                    controller.metrics.recordWireReceive(sample)
-                }
+            onWireReceive: { [weak self] sample in
+                guard let self, self.generation == id else { return }
+                self.metrics.recordWireReceive(sample)
             },
             onEnd: { report in
                 recipient.deliver { controller in controller.ended(report, id: id) }
@@ -218,6 +212,7 @@ final class NativeRDPController: ObservableObject {
         releaseInput()
         input = nil; display = nil; clipboard = nil
         remoteText = nil; remoteCopyNumber = nil; remoteClipboardAvailable = false
+        canvas?.clear()
         let wasRendered = renderedOnce
         connected = false; connecting = false
         let networkFailure: Bool
@@ -256,6 +251,7 @@ final class NativeRDPController: ObservableObject {
         remoteText = nil; remoteCopyNumber = nil; remoteClipboardAvailable = false
         connecting = false; connected = false; error = ""
         renderedOnce = false; desktopSize = .zero; retries = 0
+        fps = 0; mbps = 0; decodeMS = 0; frameAgeMS = 0; resolution = ""
         canvas?.clear()
     }
 
@@ -269,9 +265,11 @@ final class NativeRDPController: ObservableObject {
             remotePoint = bounded(CGPoint(x: CGFloat(remotePoint.x), y: CGFloat(remotePoint.y)))
             canvas?.setNeedsLayout()
         }
-        renderedOnce = true
-        connected = true
-        connecting = false
+        if !renderedOnce {
+            renderedOnce = true
+            connected = true
+            connecting = false
+        }
         frameCount += 1
         canvas?.offer(presentation, receivedAt: date)
     }
@@ -391,7 +389,7 @@ final class NativeRDPController: ObservableObject {
         let units = Array(text.utf16.prefix(8192))
         textTask = Task { @MainActor [weak self] in
             for unit in units {
-                guard !Task.isCancelled, self?.input === input, self?.connected == true else { return }
+                guard !Task.isCancelled, let self, self.input === input, self.connected else { return }
                 input.send([.unicode(codeUnit: unit, isReleased: false), .unicode(codeUnit: unit, isReleased: true)])
                 do { try await Task.sleep(for: .milliseconds(10)) } catch { return }
             }
@@ -469,7 +467,10 @@ final class NativeRDPCanvas: UIView, UIGestureRecognizerDelegate {
         pan.maximumNumberOfTouches = 1; pan.allowedTouchTypes = directTypes
         let scroll = UIPanGestureRecognizer(target: self, action: #selector(scroll(_:)))
         scroll.minimumNumberOfTouches = 2; scroll.maximumNumberOfTouches = 2
-        scroll.allowedScrollTypesMask = [.continuous, .discrete]
+        scroll.allowedTouchTypes = directTypes
+        let wheel = UIPanGestureRecognizer(target: self, action: #selector(scroll(_:)))
+        wheel.allowedTouchTypes = []
+        wheel.allowedScrollTypesMask = [.continuous, .discrete]
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(magnify(_:)))
         pinch.delegate = self; scroll.delegate = self
         let mouse = UITapGestureRecognizer(target: self, action: #selector(mouseClick(_:)))
@@ -479,7 +480,7 @@ final class NativeRDPCanvas: UIView, UIGestureRecognizerDelegate {
         let mouseDrag = UIPanGestureRecognizer(target: self, action: #selector(physicalDrag(_:)))
         mouseDrag.allowedTouchTypes = indirectTypes
         let hover = UIHoverGestureRecognizer(target: self, action: #selector(hovered(_:)))
-        [touch,right,pan,scroll,pinch,mouse,mouseRight,mouseDrag,hover].forEach { addGestureRecognizer($0) }
+        [touch,right,pan,scroll,wheel,pinch,mouse,mouseRight,mouseDrag,hover].forEach { addGestureRecognizer($0) }
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
@@ -599,7 +600,15 @@ final class NativeRDPCanvas: UIView, UIGestureRecognizerDelegate {
         if [.ended,.cancelled,.failed].contains(g.state) { scrollRemainder = 0 }
     }
     @objc private func magnify(_ g: UIPinchGestureRecognizer) {
+        let oldRect = desktopRect
+        let point = g.location(in: self)
+        let relative = CGPoint(x: (point.x-oldRect.minX)/max(1,oldRect.width), y: (point.y-oldRect.minY)/max(1,oldRect.height))
         zoom = min(4, max(1, zoom * g.scale)); g.scale = 1
+        let next = desktopRect
+        offset.x += point.x - (next.minX + relative.x*next.width)
+        offset.y += point.y - (next.minY + relative.y*next.height)
+        let maxX = max(0, (next.width-bounds.width)/2), maxY = max(0, (next.height-bounds.height)/2)
+        offset.x = min(maxX, max(-maxX, offset.x)); offset.y = min(maxY, max(-maxY, offset.y))
         if zoom == 1 { offset = .zero }
         setNeedsLayout()
     }
