@@ -386,7 +386,7 @@
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Linux: yêu cầu khởi động lại sau một phút nếu có quyền sudo không mật khẩu. Windows: chỉ sao chép lệnh Restart-Computer để bạn chạy thủ công. Các phiên đang chạy có thể bị gián đoạn."
+            "value": "Yêu cầu khởi động lại máy chủ sau một phút. Cần quyền quản trị; phiên đang chạy có thể bị gián đoạn. Lệnh không được tự gửi lại khi mất kết nối."
           }
         }
       }
@@ -617,6 +617,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Không thể đọc GitHub API. Kiểm tra mạng, kho mã và giới hạn API."
+          }
+        }
+      }
+    },
+    "Running services": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dịch vụ đang chạy"
+          }
+        }
+      }
+    },
+    "Restart result unknown": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa xác nhận máy chủ đã nhận lệnh khởi động lại. Không tự thử lại; kiểm tra trạng thái VPS trước."
           }
         }
       }

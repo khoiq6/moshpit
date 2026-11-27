@@ -42,6 +42,26 @@ pub fn portable(script: &str) -> String {
     format!("sh -c {}", quote(script))
 }
 
+/// The FFI run(String) ABI is shared with older clients, so a versioned
+/// envelope selects Windows without changing the generated bindings.
+/// Only one base64 word may cross the Windows login shell; never interpolate
+/// arbitrary text, credentials, metacharacters or paths into that command line.
+pub const POWERSHELL_PREFIX: &str = "@moshpit/ps-v1:";
+
+pub fn borrowed_line(command: &str) -> Option<String> {
+    let Some(encoded) = command.strip_prefix(POWERSHELL_PREFIX) else {
+        return Some(portable(command));
+    };
+    let body = encoded.trim_end_matches('=');
+    let padding = encoded.len() - body.len();
+    if body.is_empty() || encoded.len() > 24_000 || encoded.len() % 4 != 0
+        || padding > 2 || !body.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'+' || b == b'/')
+    {
+        return None;
+    }
+    Some(format!("powershell.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand {encoded}"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -53,6 +73,18 @@ mod tests {
         assert_eq!(quote(r"a\"), r"'a'\\''");
         assert_eq!(quote(r"\'"), r"''\\''\'''");
         assert_eq!(quote(""), "''");
+    }
+
+    #[test]
+    fn powershell_envelope_is_one_validated_argument() {
+        assert_eq!(borrowed_line("echo hello"), Some(portable("echo hello")));
+        assert_eq!(
+            borrowed_line("@moshpit/ps-v1:ZQB4AGkAdAAgADAA"),
+            Some("powershell.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand ZQB4AGkAdAAgADAA".to_owned())
+        );
+        for value in ["", "aaaa;whoami", "aaaa bbbb", "ab=c", "a===", "aa", "aaaa\n"] {
+            assert_eq!(borrowed_line(&format!("{POWERSHELL_PREFIX}{value}")), None, "{value:?}");
+        }
     }
 
     #[test]

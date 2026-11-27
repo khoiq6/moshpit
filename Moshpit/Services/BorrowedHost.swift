@@ -32,14 +32,19 @@ import Foundation
 /// progress report.
 final class BorrowedHost: HostConnection {
     let ssh: any BorrowedSshProtocol
+    let windows: Bool
 
-    init(_ ssh: any BorrowedSshProtocol) {
+    init(_ ssh: any BorrowedSshProtocol, windows: Bool = false) {
         self.ssh = ssh
+        self.windows = windows
     }
 
     // MARK: Commands
 
     func executeCommand(_ command: String) async throws -> Data {
+        guard windows == WindowsSSHCommand.isEncoded(command) else {
+            throw HostConnectionError.failed("Command does not match the host shell")
+        }
         let output = try await core { try await $0.run(command: command) }
         return try Self.succeeded(output)
     }
@@ -85,6 +90,7 @@ final class BorrowedHost: HostConnection {
         } catch HostConnectionError.notFound {
             // SFTP gave no absolute path for `.`: the shell is asked.
         }
+        guard !windows else { throw HostConnectionError.notFound }
         var home = String(decoding: try await executeCommand("pwd"), as: UTF8.self)
         // `pwd` ends the path with a newline, and only that is cut: a home
         // ending in a space is that directory (B57).
@@ -199,6 +205,7 @@ final class BorrowedHost: HostConnection {
     /// for this connection which one worked.
     func uploadToUploadsDirectory(_ data: Data, named filename: String,
                                   progress: (@Sendable (Double) -> Void)?) async throws -> String {
+        guard !windows else { throw HostConnectionError.failed("Use the Windows SFTP file manager for uploads") }
         let relay = ProgressRelay(progress)
         return try await core(writing: true, stop: { relay.stop() }) {
             try await $0.uploadToUploadsDirectory(data: data, filename: filename, progress: relay)
@@ -247,6 +254,7 @@ final class BorrowedHost: HostConnection {
         do {
             return try await cancellable(stop: stop, work)
         } catch BorrowFailure.Sftp(why: .unavailable, path: _, log: _) {
+            guard !windows else { throw HostConnectionError.failed("Windows file tools require OpenSSH SFTP") }
             return nil
         } catch {
             throw Self.mapped(error, writing: writing)
@@ -289,6 +297,8 @@ final class BorrowedHost: HostConnection {
     /// An exec form of an edit (`RemoteFileEdits`): its marker decides,
     /// read before the exit status — "taken" comes with status 1.
     private func edit(_ command: String) async throws {
+        // Recursive POSIX shell edits must never run on a Windows host.
+        guard !windows else { throw HostConnectionError.writeDenied }
         let output = try await core(writing: true) { try await $0.run(command: command) }
         let said = String(decoding: output.stdout, as: UTF8.self)
         if said.contains(RemoteFileEdits.takenMarker) { throw HostConnectionError.nameTaken }

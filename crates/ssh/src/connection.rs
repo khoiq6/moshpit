@@ -340,14 +340,37 @@ impl Ssh {
     /// login shell that is fish parses the app's sh syntax otherwise — and
     /// refuses `$?`, which every herdr command ends with (B138).
     pub async fn exec(&self, command: &str) -> Result<Process, SshError> {
+        self.exec_line(&crate::shell::portable(command)).await
+    }
+
+    async fn exec_line(&self, command_line: &str) -> Result<Process, SshError> {
         self.answered("run a command", async {
             let channel = self.open_session().await?;
-            channel
-                .exec(true, crate::shell::portable(command).as_str())
-                .await?;
+            channel.exec(true, command_line).await?;
             Process::opened(channel, self.host(), self.ends(), "run a command").await
         })
         .await
+    }
+
+    /// App-side borrowed channel, including a validated Windows PowerShell
+    /// envelope. POSIX exec/PTY and bootstrap callers keep their old semantics.
+    pub async fn run_borrowed(
+        &self,
+        command: &str,
+        cancel: Option<&CancellationToken>,
+    ) -> Result<Option<Output>, SshError> {
+        let Some(line) = crate::shell::borrowed_line(command) else {
+            return Err(SshError::Refused {
+                host: self.host(),
+                what: "invalid PowerShell command envelope".to_owned(),
+            });
+        };
+        let Some(cancel) = cancel else {
+            let process = self.exec_line(&line).await?;
+            process.close_stdin().await?;
+            return Ok(Some(process.collect().await));
+        };
+        self.run_line_until(&line, cancel).await
     }
 
     /// Runs `command` with nothing on its stdin and collects what it did:
@@ -369,13 +392,21 @@ impl Ssh {
         command: &str,
         cancel: &CancellationToken,
     ) -> Result<Option<Output>, SshError> {
+        self.run_line_until(&crate::shell::portable(command), cancel).await
+    }
+
+    async fn run_line_until(
+        &self,
+        line: &str,
+        cancel: &CancellationToken,
+    ) -> Result<Option<Output>, SshError> {
         if cancel.is_cancelled() {
             return Ok(None);
         }
         let process = tokio::select! {
             biased;
             _ = cancel.cancelled() => return Ok(None),
-            process = self.exec(command) => process?,
+            process = self.exec_line(line) => process?,
         };
         process.close_stdin().await?;
         let writer = process.writer();

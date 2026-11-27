@@ -267,10 +267,7 @@ impl BorrowedSsh {
         let ssh = self.ssh.clone();
         let cancel = self.cancel.clone();
         let output = on_core(self.cancel.as_ref(), async move {
-            match cancel {
-                None => ssh.run(&command).await.map(Some),
-                Some(cancel) => ssh.run_until(&command, &cancel).await,
-            }
+            ssh.run_borrowed(&command, cancel.as_ref()).await
         })
         .await?
         .map_err(|error| BorrowFailure::ssh(&Failure::from(&error)))?;

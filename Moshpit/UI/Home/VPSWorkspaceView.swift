@@ -35,9 +35,21 @@ enum VPSCommands {
     """
     static let processes = "LC_ALL=C ps -eo pid,pcpu,pmem,comm --sort=-pcpu | head -n 51"
     static let ports = "LC_ALL=C ss -lntu"
-    static let windowsUsage = "Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize,FreePhysicalMemory; Get-CimInstance Win32_Processor | Select-Object LoadPercentage; Get-PSDrive -PSProvider FileSystem"
-    static let windowsProcesses = "Get-Process | Sort-Object CPU -Descending | Select-Object -First 30 Id,ProcessName,CPU,WorkingSet"
-    static let windowsPorts = "Get-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,OwningProcess"
+    static let services = "LC_ALL=C systemctl list-units --type=service --state=running --no-pager --plain | head -n 101"
+    static let windowsUsage = #"""
+    $os = Get-CimInstance Win32_OperatingSystem
+    $cpu = (Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
+    $drive = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='$env:SystemDrive'"
+    if ($null -eq $cpu -or $os.TotalVisibleMemorySize -le 0 -or $drive.Size -le 0) { exit 1 }
+    $ram = 100 * (1 - $os.FreePhysicalMemory / $os.TotalVisibleMemorySize)
+    $disk = 100 * (1 - $drive.FreeSpace / $drive.Size)
+    $culture = [System.Globalization.CultureInfo]::InvariantCulture
+    Write-Output (($cpu.ToString('F1',$culture)) + ' ' + ($ram.ToString('F1',$culture)) + ' ' + ($disk.ToString('F1',$culture)))
+    """#
+    static let windowsProcesses = "Get-Process | Sort-Object CPU -Descending | Select-Object -First 50 Id,ProcessName,CPU,WorkingSet | Format-Table -AutoSize | Out-String -Width 200"
+    static let windowsPorts = "Get-NetTCPConnection -State Listen | Select-Object LocalAddress,LocalPort,OwningProcess | Format-Table -AutoSize | Out-String -Width 200; Get-NetUDPEndpoint | Select-Object LocalAddress,LocalPort,OwningProcess | Format-Table -AutoSize | Out-String -Width 200"
+    static let windowsServices = "Get-Service | Where-Object Status -eq Running | Select-Object Name,DisplayName,Status | Format-Table -AutoSize | Out-String -Width 200"
+    static let windowsRestart = #"shutdown.exe /r /t 60 /c "Moshpit"; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }"#
 }
 
 struct VPSWorkspaceView: View {
@@ -150,6 +162,7 @@ private struct VPSHostTools: View {
     @State private var showFiles = false
     @State private var live = false
     @State private var windows = false
+    @State private var measuredAt: Date?
     @State private var confirmRestart = false
     @AppStorage("workspace.quickCommand") private var quickCommand = ""
     private var active: SessionHub.ActiveSession? {
@@ -162,37 +175,40 @@ private struct VPSHostTools: View {
                 Button(WorkspaceWords.text("Open terminal")) { openTerminal(server.id) }
                 if active == nil { Text(WorkspaceWords.text("Connect in terminal first")).foregroundStyle(.secondary) }
                 Toggle(WorkspaceWords.text("Windows server"), isOn: $windows)
-                    .onChange(of: windows) { _, _ in live = false; usage = nil; output = "" }
+                    .disabled(busy || server.connectionProtocol != .ssh || server.multiplexer != .none)
+                    .onChange(of: windows) { _, value in
+                        WindowsHostPreferences.setWindows(value, id: server.id)
+                        live = false; usage = nil; measuredAt = nil; output = ""
+                    }
             }
             Section(WorkspaceWords.text("Resource usage")) {
-                if windows {
-                    Text(WorkspaceWords.text("Windows metrics explanation")).font(.caption)
-                    Button(WorkspaceWords.text("Copy PowerShell metrics")) { copy(VPSCommands.windowsUsage) }
+                if let usage {
+                    gauge("CPU", usage.cpu)
+                    gauge("RAM", usage.ram)
+                    gauge(WorkspaceWords.text("Disk"), usage.disk)
+                    if let measuredAt { Text(measuredAt.formatted(date: .omitted, time: .standard)).font(.caption).foregroundStyle(.secondary) }
                 } else {
-                    if let usage {
-                        gauge("CPU", usage.cpu)
-                        gauge("RAM", usage.ram)
-                        gauge(WorkspaceWords.text("Disk"), usage.disk)
-                    } else {
-                        Text(WorkspaceWords.text("No measurements")).foregroundStyle(.secondary)
-                    }
-                    Button(WorkspaceWords.text("Refresh")) { Task { await refresh() } }.disabled(active == nil || busy)
-                    Toggle(WorkspaceWords.text("Auto refresh (10s)"), isOn: $live).disabled(active == nil)
+                    Text(WorkspaceWords.text("No measurements")).foregroundStyle(.secondary)
                 }
+                Button(WorkspaceWords.text("Refresh")) { Task { await refresh() } }.disabled(active == nil || busy)
+                Toggle(WorkspaceWords.text("Auto refresh (10s)"), isOn: $live).disabled(active == nil)
             }
             Section(WorkspaceWords.text("Management")) {
                 Button(WorkspaceWords.text("Processes")) {
-                    if windows { copy(VPSCommands.windowsProcesses) } else { Task { await run(VPSCommands.processes) } }
-                }.disabled(!windows && (active == nil || busy))
+                    Task { await run(windows ? VPSCommands.windowsProcesses : VPSCommands.processes) }
+                }.disabled(active == nil || busy)
                 Button(WorkspaceWords.text("Listening ports")) {
-                    if windows { copy(VPSCommands.windowsPorts) } else { Task { await run(VPSCommands.ports) } }
-                }.disabled(!windows && (active == nil || busy))
+                    Task { await run(windows ? VPSCommands.windowsPorts : VPSCommands.ports) }
+                }.disabled(active == nil || busy)
+                Button(WorkspaceWords.text("Running services")) {
+                    Task { await run(windows ? VPSCommands.windowsServices : VPSCommands.services) }
+                }.disabled(active == nil || busy)
                 Button(WorkspaceWords.text("File manager")) { Task { await browse() } }.disabled(active == nil || busy)
                 if let active {
                     NavigationLink(WorkspaceWords.text("Text / code editor")) { WorkspaceCodeEditor(session: active) }
                 }
                 Button(WorkspaceWords.text("Restart server"), role: .destructive) { confirmRestart = true }
-                    .disabled(!windows && (active == nil || busy))
+                    .disabled(active == nil || busy)
                 if busy { ProgressView() }
                 if !output.isEmpty {
                     Text(verbatim: output).font(.caption.monospaced()).textSelection(.enabled)
@@ -211,6 +227,7 @@ private struct VPSHostTools: View {
             }
         }
         .navigationTitle(server.displayName)
+        .onAppear { windows = WindowsHostPreferences.isWindows(server.id) }
         .task(id: live) {
             guard live else { return }
             while !Task.isCancelled {
@@ -223,8 +240,7 @@ private struct VPSHostTools: View {
         }
         .confirmationDialog(WorkspaceWords.text("Restart server?"), isPresented: $confirmRestart, titleVisibility: .visible) {
             Button(WorkspaceWords.text("Confirm restart"), role: .destructive) {
-                if windows { copy("Restart-Computer") }
-                else { Task { await run("sudo -n shutdown -r +1") } }
+                Task { await run(windows ? VPSCommands.windowsRestart : "sudo -n shutdown -r +1", mutating: true) }
             }
             Button(WorkspaceWords.text("Cancel"), role: .cancel) {}
         } message: { Text(WorkspaceWords.text("Restart explanation")) }
@@ -240,21 +256,28 @@ private struct VPSHostTools: View {
         output = WorkspaceWords.text("Copied to clipboard")
     }
     private func refresh() async {
-        guard !busy, !windows, let active else { return }
-        busy = true
-        defer { busy = false }
-        let result = await active.runOnHost(VPSCommands.usage)
-        guard !windows else { return }
-        usage = result.flatMap(VPSUsage.parse)
-        if usage == nil { output = WorkspaceWords.text("Read failed") }
-    }
-    private func run(_ command: String) async {
         guard !busy, let active else { return }
         busy = true
         defer { busy = false }
-        if let result = await active.runOnHost(command) {
+        let isWindows = windows
+        let command = isWindows ? WindowsSSHCommand.encode(VPSCommands.windowsUsage) : VPSCommands.usage
+        let result = try? await active.runWorkspaceCommand(command)
+        guard windows == isWindows, !Task.isCancelled else { return }
+        usage = result.flatMap(VPSUsage.parse)
+        measuredAt = usage == nil ? nil : Date()
+        if usage == nil { output = WorkspaceWords.text("Read failed") }
+    }
+    private func run(_ command: String, mutating: Bool = false) async {
+        guard !busy, let active else { return }
+        busy = true
+        defer { busy = false }
+        let encoded = windows ? WindowsSSHCommand.encode(command) : command
+        do {
+            let result = try await active.runWorkspaceCommand(encoded, mutating: mutating)
             output = result.isEmpty ? WorkspaceWords.text("Command accepted") : String(result.prefix(32_000))
-        } else { output = WorkspaceWords.text("Read failed") }
+        } catch {
+            output = mutating ? WorkspaceWords.text("Restart result unknown") : WorkspaceWords.text("Read failed")
+        }
     }
     private func browse() async {
         guard !busy, let active else { return }

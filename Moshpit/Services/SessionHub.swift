@@ -590,6 +590,16 @@ final class SessionHub {
             return String(data: output, encoding: .utf8)
         }
 
+        /// Workspace management uses the existing authenticated side channel.
+        /// Never retry a mutation whose result may have been lost during reconnect.
+        func runWorkspaceCommand(_ command: String, mutating: Bool = false) async throws -> String {
+            guard let rust else { throw HostConnectionError.notConnected }
+            let result = try await rust.side.perform(.waiting, retrying: !mutating) { host in
+                try await host.executeCommand(command)
+            }
+            return String(decoding: result, as: UTF8.self)
+        }
+
         /// Create the FIRST tmux session on a server that has none, on the
         /// Rust core (B228): made detached on the session's own connection,
         /// and the waiting control client attaches it.

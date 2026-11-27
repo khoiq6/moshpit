@@ -9,3 +9,6 @@ From Home, tap + then VPS workspace. Connect a host through its normal terminal 
 - AI/quick command buttons copy text without executing it. Existing terminal sessions remain the way to manage AI agents. Clipboard is manual only; never read in background. Linux SSH/Mosh reconnection and iPad split view remain upstream features.
 - RDP remains HTTPS Guacamole. The gateway needs setup; native RDP, adaptive bitrate/FPS, native custom mouse, automatic RDP reconnect, Windows background exec, automatic clipboard sync, full-app lock, simultaneous multi-window terminals and private GitHub management are not implemented.
 - Tests and iPhone performance measurements are required before use in production.
+
+## Windows direct management
+The Windows preset records a device-local OS flag. Workspace metrics, processes, TCP/UDP ports and running services now use a validated UTF-16LE PowerShell envelope over the already authenticated SSH connection, not POSIX sh. Restart is explicitly confirmed, uses a 60-second delay, and is never automatically retried. Windows file operations require SFTP; unsupported POSIX fallbacks are refused, including recursive deletion. These paths are not yet verified against a real Windows server.

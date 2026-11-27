@@ -145,7 +145,8 @@ final class RustSideChannel {
             let ssh = try await awaitingCore(timeout: (borrowTimeout, HostConnectionError.notAnswering)) {
                 try await sessions.borrowSsh(session: id)
             }
-            return BorrowedHost(ssh)
+            let windows = session.map { WindowsHostPreferences.isWindows($0.connection.id) } ?? false
+            return BorrowedHost(ssh, windows: windows)
         } catch BorrowFailure.NotConnected {
             return nil
         } catch {
@@ -156,9 +157,11 @@ final class RustSideChannel {
     /// Asks the connection `true` unless it answered lately.
     private func checkAnswers(_ host: BorrowedHost, epoch: Int) async throws {
         if epoch == self.epoch, let at = answeredAt, ContinuousClock.now - at < freshFor { return }
+        let command = host.windows ? WindowsSSHCommand.encode("exit 0") : "true"
+        let timeout = host.windows ? max(8, pingTimeout) : pingTimeout
         do {
-            _ = try await awaitingCore(timeout: (pingTimeout, HostConnectionError.notAnswering)) {
-                try await host.executeCommand("true")
+            _ = try await awaitingCore(timeout: (timeout, HostConnectionError.notAnswering)) {
+                try await host.executeCommand(command)
             }
         } catch is CancellationError {
             throw CancellationError()
@@ -220,6 +223,7 @@ final class RustSideChannel {
     /// make plain mosh dial its side connection for nobody.
     private func sweepUploads() {
         guard let connection = session?.connection,
+              !WindowsHostPreferences.isWindows(connection.id),
               connection.connectionProtocol == .ssh || connection.multiplexer == .tmux else { return }
         let days = AppSettings.shared.uploadRetentionDays
         guard days > 0 else { return }

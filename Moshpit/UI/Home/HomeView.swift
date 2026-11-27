@@ -254,6 +254,9 @@ struct HomeView: View {
         ConnectionFormNSHPage(store: store, keychain: keychain, existing: existing,
                               secretMissing: existing.map { store.secretMissing.contains($0.id) } ?? false,
                               windowsSSH: windowsSSH,
+                              onSaved: { id in
+                                  if windowsSSH && existing == nil { WindowsHostPreferences.setWindows(true, id: id) }
+                              },
                               onDelete: { delete($0) }, releaseSecret: releaseSecret)
     }
 
@@ -308,6 +311,7 @@ struct HomeView: View {
                         monitor.untrack(connectionId: connection.id)
                         await hub.disconnect(connection.id)
                     })
+                WindowsHostPreferences.setWindows(false, id: connection.id)
                 // Its finish cards, now that it is no longer saved (B437).
                 monitor.sweepDelivered()
             } catch {

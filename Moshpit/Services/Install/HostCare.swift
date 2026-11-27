@@ -139,6 +139,7 @@ final class HostCare {
     /// once this app run, silently putting right what drifted; ask (once)
     /// before ever touching a host that has no hooks.
     func tend(_ connection: ServerConnection) {
+        guard !WindowsHostPreferences.isWindows(connection.id) else { return }
         sync()
         core.tend(connection: Self.conn(connection))
     }
