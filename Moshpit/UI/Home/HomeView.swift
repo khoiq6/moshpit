@@ -29,6 +29,7 @@ struct HomeView: View {
     @State private var showConnectionKind = false
     @State private var windowsSSH = false
     @State private var showWindowsDesktop = false
+    @State private var showVPSWorkspace = false
     @State private var editingConnection: ServerConnection?
     @State private var deletingConnection: ServerConnection?
     /// The "Jump hosts (N)" row's list.
@@ -199,10 +200,23 @@ struct HomeView: View {
             Button(WindowsWords.text("Linux / Unix SSH")) { windowsSSH = false; showAddConnection = true }
             Button(WindowsWords.text("Windows SSH (PowerShell / CMD)")) { windowsSSH = true; showAddConnection = true }
             Button(WindowsWords.text("Windows Remote Desktop (RDP gateway)")) { showWindowsDesktop = true }
+            Button(WorkspaceWords.text("VPS workspace")) { showVPSWorkspace = true }
             Button("Cancel", role: .cancel) {}
         }
         .appSheet(isPresented: $showAddConnection) {
             connectionForm(existing: nil, windowsSSH: windowsSSH)
+        }
+        .appSheet(isPresented: $showVPSWorkspace) {
+            VPSWorkspaceView(store: store, hub: hub, openTerminal: { id in
+                showVPSWorkspace = false
+                open(id)
+            }, openDesktop: {
+                showVPSWorkspace = false
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(400))
+                    showWindowsDesktop = true
+                }
+            })
         }
         .fullScreenCover(isPresented: $showWindowsDesktop) {
             WindowsDesktopView()

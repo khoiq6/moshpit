@@ -1,0 +1,626 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "VPS workspace": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không gian quản lý VPS"
+          }
+        }
+      }
+    },
+    "Workspace locked": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không gian quản lý đã khóa"
+          }
+        }
+      }
+    },
+    "Unlock": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở khóa"
+          }
+        }
+      }
+    },
+    "Authentication failed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xác thực thất bại"
+          }
+        }
+      }
+    },
+    "Servers": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ"
+          }
+        }
+      }
+    },
+    "Connected": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã kết nối"
+          }
+        }
+      }
+    },
+    "Not connected": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa kết nối"
+          }
+        }
+      }
+    },
+    "Add a server first": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy thêm máy chủ trước"
+          }
+        }
+      }
+    },
+    "Tools": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công cụ"
+          }
+        }
+      }
+    },
+    "Windows desktop": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn hình Windows"
+          }
+        }
+      }
+    },
+    "Security": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bảo mật"
+          }
+        }
+      }
+    },
+    "Protect workspace": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bảo vệ không gian quản lý"
+          }
+        }
+      }
+    },
+    "Workspace security explanation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xác thực thiết bị bằng Face ID hoặc mật mã khi mở không gian quản lý. Không khóa các màn hình terminal khác."
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đóng"
+          }
+        }
+      }
+    },
+    "Open terminal": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở terminal"
+          }
+        }
+      }
+    },
+    "Connect in terminal first": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy kết nối máy chủ trong terminal trước."
+          }
+        }
+      }
+    },
+    "Windows server": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ Windows"
+          }
+        }
+      }
+    },
+    "Resource usage": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tài nguyên hệ thống"
+          }
+        }
+      }
+    },
+    "Windows metrics explanation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kênh lệnh nền hiện tại dùng POSIX. Sao chép lệnh PowerShell và chạy trong terminal Windows."
+          }
+        }
+      }
+    },
+    "Copy PowerShell metrics": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao chép lệnh đo tài nguyên PowerShell"
+          }
+        }
+      }
+    },
+    "Disk": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ổ đĩa"
+          }
+        }
+      }
+    },
+    "No measurements": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có số liệu"
+          }
+        }
+      }
+    },
+    "Refresh": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Làm mới"
+          }
+        }
+      }
+    },
+    "Auto refresh (10s)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tự làm mới mỗi 10 giây"
+          }
+        }
+      }
+    },
+    "Management": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quản lý"
+          }
+        }
+      }
+    },
+    "Processes": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiến trình"
+          }
+        }
+      }
+    },
+    "Listening ports": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cổng đang lắng nghe"
+          }
+        }
+      }
+    },
+    "File manager": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quản lý tệp"
+          }
+        }
+      }
+    },
+    "Text / code editor": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trình sửa văn bản / mã"
+          }
+        }
+      }
+    },
+    "Restart server": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại máy chủ"
+          }
+        }
+      }
+    },
+    "AI and shortcuts": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI và lệnh nhanh"
+          }
+        }
+      }
+    },
+    "Quick command": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lệnh nhanh"
+          }
+        }
+      }
+    },
+    "Copy command": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao chép lệnh"
+          }
+        }
+      }
+    },
+    "Paste clipboard into command": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dán từ bảng nhớ tạm vào lệnh"
+          }
+        }
+      }
+    },
+    "Commands are copied only": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lệnh chỉ được sao chép; bạn tự dán và chạy trong terminal. Không tự gửi lệnh tới máy chủ."
+          }
+        }
+      }
+    },
+    "Restart server?": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại máy chủ?"
+          }
+        }
+      }
+    },
+    "Confirm restart": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xác nhận khởi động lại"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hủy"
+          }
+        }
+      }
+    },
+    "Restart explanation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Linux: yêu cầu khởi động lại sau một phút nếu có quyền sudo không mật khẩu. Windows: chỉ sao chép lệnh Restart-Computer để bạn chạy thủ công. Các phiên đang chạy có thể bị gián đoạn."
+          }
+        }
+      }
+    },
+    "Copied to clipboard": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã sao chép vào bảng nhớ tạm"
+          }
+        }
+      }
+    },
+    "Read failed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không đọc được dữ liệu hoặc lệnh thất bại. Kiểm tra kết nối, hệ điều hành và quyền."
+          }
+        }
+      }
+    },
+    "Command accepted": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ đã chấp nhận lệnh."
+          }
+        }
+      }
+    },
+    "Open text file": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở tệp văn bản"
+          }
+        }
+      }
+    },
+    "Remote file path": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đường dẫn tệp trên máy chủ"
+          }
+        }
+      }
+    },
+    "Read": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đọc"
+          }
+        }
+      }
+    },
+    "Content": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nội dung"
+          }
+        }
+      }
+    },
+    "Save as new file": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu thành tệp mới"
+          }
+        }
+      }
+    },
+    "Destination path": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đường dẫn đích"
+          }
+        }
+      }
+    },
+    "Upload copy": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tải bản sao lên"
+          }
+        }
+      }
+    },
+    "Editor safety explanation": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp UTF-8 tối đa 1 MiB. Chỉ lưu bản sao mới, không ghi đè tệp gốc."
+          }
+        }
+      }
+    },
+    "Text file limit": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ hỗ trợ tệp UTF-8 dạng văn bản tối đa 1 MiB."
+          }
+        }
+      }
+    },
+    "Copy uploaded": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã tải bản sao lên"
+          }
+        }
+      }
+    },
+    "Refresh builds": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Làm mới bản build"
+          }
+        }
+      }
+    },
+    "Open repository": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở kho mã"
+          }
+        }
+      }
+    },
+    "Commits": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commit"
+          }
+        }
+      }
+    },
+    "Public repos only": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ đọc các bản build công khai. Mở bản build trên GitHub để tải IPA sau khi đăng nhập."
+          }
+        }
+      }
+    },
+    "Succeeded": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thành công"
+          }
+        }
+      }
+    },
+    "Failed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thất bại"
+          }
+        }
+      }
+    },
+    "Running": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chạy"
+          }
+        }
+      }
+    },
+    "Queued": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang chờ"
+          }
+        }
+      }
+    },
+    "Cancelled": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã hủy"
+          }
+        }
+      }
+    },
+    "GitHub unavailable": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể đọc GitHub API. Kiểm tra mạng, kho mã và giới hạn API."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
